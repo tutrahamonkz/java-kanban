@@ -24,21 +24,7 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        String result;
-        result = "Subtask{" +
-                "title='" + getTitle() + '\'';
-        if (getDescriptions() == null) {
-            result += ", descriptions=" + null;
-        } else {
-            result += ", descriptions=" + getDescriptions().size();
-        }
-        result += ", id=" + getId() +
-                ", status=" + getStatus();
-        if (epic == null) {
-            result += ", epic='" + null + '\'' + '}';
-        } else {
-            result += ", epic='" + epic.getTitle() + '\'' + '}';
-        }
-        return result;
+        String template = "Subtask{title='%s', descriptions=%d, id=%d, status=%s, epic=%s}";
+        return String.format(template, getTitle(), getDescriptions().size(), getId(), getStatus(), epic.getTitle());
     }
 }

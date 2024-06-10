@@ -52,7 +52,8 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id && Objects.equals(title, task.title) && Objects.equals(descriptions, task.descriptions) && status == task.status;
+        return id == task.id && Objects.equals(title, task.title) && Objects.equals(descriptions, task.descriptions) &&
+                status == task.status;
     }
 
     @Override
@@ -62,11 +63,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
-                "title='" + title + '\'' +
-                ", descriptions=" + descriptions +
-                ", id=" + id +
-                ", status=" + status +
-                '}';
+        String template = "Task{title='%s', descriptions=%d, id=%d, status=%s}";
+        return String.format(template, title, descriptions.size(), id, status);
     }
 }
