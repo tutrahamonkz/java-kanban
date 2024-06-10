@@ -19,10 +19,10 @@ public class Epic extends Task {
         this.subtasks = subtasks;
     }
 
-    public void calculateStatus() {
+    public void calculateStatus() { // Расчет статуса эпика
         int countNew = 0;
         int countDone = 0;
-        for (Subtask subtask : subtasks) {
+        for (Subtask subtask : subtasks) { // Проверяем какие статусы у подзадач
             Status status = subtask.getStatus();
             if (status == Status.NEW) {
                 countNew++;
@@ -31,7 +31,7 @@ public class Epic extends Task {
                 countDone++;
             }
         }
-        if (countNew == subtasks.size() || subtasks.isEmpty()) {
+        if (countNew == subtasks.size() || subtasks.isEmpty()) { // В зависимости от количества подзадач и их статусов назначаем статус эпику
             status = Status.NEW;
         } else if (countDone == subtasks.size()) {
             status = Status.DONE;
