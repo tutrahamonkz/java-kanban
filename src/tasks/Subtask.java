@@ -5,10 +5,6 @@ import java.util.ArrayList;
 public class Subtask extends Task {
     private Epic epic;
 
-    public Subtask(String title, ArrayList<String> descriptions, Status status) {
-        super(title, descriptions, status);
-    }
-
     public Subtask(String title, ArrayList<String> descriptions, Status status, Epic epic) {
         super(title, descriptions, status);
         this.epic = epic;
