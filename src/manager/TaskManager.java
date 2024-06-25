@@ -9,41 +9,41 @@ public interface TaskManager {
 
     void createTask(Task task);
 
-    HashMap<Integer, Task> getTasks();
-
-    void clearTasks();
-
-    Task getTask(int id);
-
-    void updateTask(Task task);
-
-    void removeTask(int id);
-
     void createEpic(Epic epic);
-
-    HashMap<Integer, Epic> getEpics();
-
-    void clearEpics();
-
-    Epic getEpic(int id);
-
-    void updateEpic(Epic epic);
-
-    void removeEpic(int id);
-
-    ArrayList<Subtask> getSubtaskByEpic(Epic epic);
 
     void createSubtask(Subtask subtask);
 
+    HashMap<Integer, Task> getTasks();
+
+    HashMap<Integer, Epic> getEpics();
+
     HashMap<Integer, Subtask> getSubtasks();
+
+    void clearTasks();
+
+    void clearEpics();
 
     void clearSubtask();
 
+    Task getTask(int id);
+
+    Epic getEpic(int id);
+
     Subtask getSubtask(int id);
+
+    void updateTask(Task task);
+
+    void updateEpic(Epic epic);
 
     void updateSubtask(Subtask subtask);
 
+    void removeTask(int id);
+
+    void removeEpic(int id);
+
     void removeSubtask(int id);
+
+    ArrayList<Subtask> getSubtaskByEpic(Epic epic);
 
     ArrayList<Task> getHistory();
 }
