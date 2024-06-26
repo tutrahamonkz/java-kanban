@@ -7,11 +7,11 @@ import java.util.HashMap;
 
 public interface TaskManager {
 
-    void createTask(Task task);
+    Integer createTask(Task task);
 
-    void createEpic(Epic epic);
+    Integer createEpic(Epic epic);
 
-    void createSubtask(Subtask subtask);
+    Integer createSubtask(Subtask subtask);
 
     HashMap<Integer, Task> getTasks();
 
