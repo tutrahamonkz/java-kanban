@@ -20,11 +20,12 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createTask(Task task) { // Создание задачи
+    public Integer createTask(Task task) { // Создание задачи
         if (!tasks.containsKey(task.getId())) { // Если задача есть в списке
             task.setId(++id);
             tasks.put(task.getId(), task);
         }
+        return task.getId();
     }
 
     @Override
@@ -63,12 +64,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createEpic(Epic epic) { // Создание эпика
+    public Integer createEpic(Epic epic) { // Создание эпика
         if (!epics.containsKey(epic.getId())) {
             epic.setId(++id);
             calculateStatus(epic);
             epics.put(epic.getId(), epic);
         }
+        return epic.getId();
     }
 
     @Override
@@ -128,7 +130,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createSubtask(Subtask subtask) { // Создание подзадачи
+    public Integer createSubtask(Subtask subtask) { // Создание подзадачи
             if (!subtasks.containsKey(subtask.getId()) && subtask.getEpicId() != 0) { // Создаём подзадачу только если есть эпик
                 subtask.setId(++id);
                 subtasks.put(subtask.getId(), subtask);
@@ -136,6 +138,7 @@ public class InMemoryTaskManager implements TaskManager {
                 epics.get(epicId).getSubtasksId().add(subtask.getId()); // Добавляем подзадачу в список подзадач эпика
                 calculateStatus(epics.get(epicId));
             }
+            return subtask.getId();
     }
 
     @Override
@@ -179,7 +182,8 @@ public class InMemoryTaskManager implements TaskManager {
             Subtask subtask = subtasks.get(id);
             subtasks.remove(id);
             int idEpic = subtask.getEpicId(); // Получаем id связанного с подзадачей эпика
-            epics.get(idEpic).getSubtasksId().remove(id); // Удаляем подзадачу в списке эпика
+            int index = epics.get(idEpic).getIndexSubtaskId(id);
+            epics.get(idEpic).getSubtasksId().remove(index); // Удаляем подзадачу в списке эпика
             calculateStatus(epics.get(idEpic)); // Пересчитываем статус эпика
         }
     }
