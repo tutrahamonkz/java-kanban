@@ -3,24 +3,24 @@ package tasks;
 import java.util.ArrayList;
 
 public class Subtask extends Task {
-    private Epic epic;
+    private Integer epicId;
 
-    public Subtask(String title, ArrayList<String> descriptions, Status status, Epic epic) {
+    public Subtask(String title, ArrayList<String> descriptions, Status status, Integer epicId) {
         super(title, descriptions, status);
-        this.epic = epic;
+        this.epicId = epicId;
     }
 
-    public Epic getEpic() {
-        return epic;
+    public Integer getEpicId() {
+        return epicId;
     }
 
-    public void setEpic(Epic epic) {
-        this.epic = epic;
+    public void setEpicId(Integer epicId) {
+        this.epicId = epicId;
     }
 
     @Override
     public String toString() {
-        String template = "Subtask{title='%s', descriptions=%d, id=%d, status=%s, epic=%s}";
-        return String.format(template, getTitle(), getDescriptions().size(), getId(), getStatus(), epic.getTitle());
+        String template = "Subtask{title='%s', descriptions=%d, id=%d, status=%s, epicId=%d}";
+        return String.format(template, getTitle(), getDescriptions().size(), getId(), getStatus(), epicId);
     }
 }
