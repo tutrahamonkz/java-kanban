@@ -28,20 +28,6 @@ public class Epic extends Task {
         return false;
     }
 
-    public Integer getIndexSubtaskId(Integer subtaskId) {
-        int index = -1;
-        for (int i = 0; i < subtasksId.size(); i++) {
-            if (subtaskId.equals(subtasksId.get(i))) {
-                index = i;
-                break;
-            }
-        }
-        if (index >= 0) {
-            return index;
-        }
-        return null;
-    }
-
     @Override
     public String toString() {
         String template = "Epic{title='%s', id=%d, status=%s, subtasks=%d}";
