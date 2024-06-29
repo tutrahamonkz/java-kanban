@@ -17,8 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
 
-    TaskManager manager = Managers.getDefault();
-    HistoryManager historyManager = Managers.getDefaultHistory();
+    TaskManager manager = Managers.getDefault(Managers.getDefaultHistory());
     Task task1;
     Epic epic1;
     Epic savedEpic;
@@ -188,12 +187,50 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    public void updatingEpicWithANonExistentSubtask() {
+        Epic newEpic = new Epic("new epic", new ArrayList<>(), Status.NEW);
+        newEpic.setId(epicId);
+        newEpic.setSubtask(0);
+
+        manager.updateEpic(newEpic);
+
+        Epic savedNewEpic = manager.getEpic(epicId);
+
+        assertEquals(savedEpic.getTitle(), savedNewEpic.getTitle(), "Эпик был изменен.");
+    }
+
+    @Test
+    public void updateSubtask() {
+        Subtask savedSubtask = manager.getSubtask(subtaskId);
+        Subtask newSubtask = new Subtask("new subtask", new ArrayList<>(), Status.IN_PROGRESS, epicId);
+        newSubtask.setId(subtaskId);
+        newSubtask.setDescription("Описание");
+
+        manager.updateSubtask(newSubtask);
+
+        Subtask savedNewSubtask = manager.getSubtask(subtaskId);
+
+        assertNotEquals(savedSubtask.getTitle(), savedNewSubtask.getTitle(), "Название не изменилось");
+        assertNotEquals(savedSubtask.getDescriptions(), savedNewSubtask.getDescriptions(), "Описание не " +
+                                                                                            "изменилось");
+        assertNotEquals(savedSubtask.getStatus(), savedNewSubtask.getStatus(), "Статус не изменился");
+    }
+
+    @Test
+    public void getSubtaskByEpic() {
+        ArrayList<Integer> savedEpicSubtaskIdList = manager.getEpic(epicId).getSubtasksId();
+        ArrayList<Integer> subtaskByEpic = manager.getSubtaskByEpic(epicId);
+        assertEquals(subtaskByEpic, savedEpicSubtaskIdList, "Список подзадач отличается");
+    }
+
+    @Test
     public void getHistoryCurrentAndHistoryNotEmpty() {
-        Epic historyEpic = (Epic) historyManager.getHistory().getFirst();
+        Epic historyEpic = (Epic) manager.getHistory().getFirst();
 
         assertEquals(savedEpic, historyEpic, "Задачи не совпадают.");
 
-        final ArrayList<Task> history = historyManager.getHistory();
+        final ArrayList<Task> history = manager.getHistory();
+
         assertNotNull(history, "История пуста.");
         assertEquals(1, history.size(), "История пуста.");
     }
