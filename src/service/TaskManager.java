@@ -1,6 +1,8 @@
-package manager;
+package service;
 
-import tasks.*;
+import model.Epic;
+import model.Subtask;
+import model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;

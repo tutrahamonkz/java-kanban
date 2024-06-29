@@ -1,13 +1,13 @@
-package manager;
+package service;
 
-import tasks.Task;
+import model.Task;
 
 import java.util.ArrayList;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
     private static final int COUNT_HISTORY = 10;
-    private ArrayList<Task> taskHistory;
+    private static ArrayList<Task> taskHistory;
 
     public InMemoryHistoryManager() {
         taskHistory = new ArrayList<>();

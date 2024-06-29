@@ -1,12 +1,16 @@
-package manager;
+package service;
 
-import tasks.*;
+import model.Epic;
+import model.Status;
+import model.Subtask;
+import model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class InMemoryTaskManager implements TaskManager {
-    HistoryManager historyManager = Managers.getDefaultHistory();
+
+    public HistoryManager historyManager = Managers.getDefaultHistory();
     private static int id = 0;
     private final HashMap<Integer, Task> tasks;
     private final HashMap<Integer, Epic> epics;
@@ -100,6 +104,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateEpic(Epic epic) { // Обновление эпика
         if (epics.containsKey(epic.getId())) {
+            ArrayList<Integer> subtaskId = epic.getSubtasksId();
+            for (Integer id : subtaskId) { // Проверяем что в списке подзадач нет ID эпика.
+                if (id == epic.getId()) {
+                    return;
+                }
+            }
             epics.put(epic.getId(), epic);
         }
     }
@@ -171,8 +181,10 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateSubtask(Subtask subtask) { // Обновление подзадачи
         int idSubtask = subtask.getId();
         if (subtasks.containsKey(idSubtask)) {
-            subtasks.put(idSubtask, subtask);
-            calculateStatus(epics.get(subtask.getEpicId())); // Обновляем статус эпика
+            if (subtask.setEpicId(subtask.getEpicId())) { // Проверяем что ID подзадачи не совпадает с ID эпика
+                subtasks.put(idSubtask, subtask);
+                calculateStatus(epics.get(subtask.getEpicId())); // Обновляем статус эпика
+            }
         }
     }
 
