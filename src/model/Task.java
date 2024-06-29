@@ -27,6 +27,13 @@ public class Task {
         this.descriptions = descriptions;
     }
 
+    public void setDescription(String description) {
+        if (descriptions == null) {
+            descriptions = new ArrayList<>();
+        }
+        descriptions.add(description);
+    }
+
     public int getId() {
         return id;
     }
