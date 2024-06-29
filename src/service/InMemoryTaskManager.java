@@ -183,7 +183,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateSubtask(Subtask subtask) { // Обновление подзадачи
         int idSubtask = subtask.getId();
         if (subtasks.containsKey(idSubtask)) {
-            if (subtask.setEpicId(subtask.getEpicId())) { // Проверяем что ID подзадачи не совпадает с ID эпика
+            if (subtask.setEpicId(subtask.getEpicId()) && epics.containsKey(subtask.getEpicId())) { // Проверяем что
+                                                    // ID подзадачи не совпадает с ID эпика и такой эпик существует
                 subtasks.put(idSubtask, subtask);
                 calculateStatus(epics.get(subtask.getEpicId())); // Обновляем статус эпика
             }
