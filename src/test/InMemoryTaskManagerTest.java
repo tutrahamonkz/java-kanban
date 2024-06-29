@@ -6,7 +6,6 @@ import model.Subtask;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import service.HistoryManager;
 import service.Managers;
 import service.TaskManager;
 
@@ -94,30 +93,24 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void tasksAreEqualAtTheSameId() {
-        task1.setId(1);
-
         Task task2 = new Task("task2", new ArrayList<>(), Status.IN_PROGRESS);
-        task2.setId(1);
+        task2.setId(taskId);
 
         assertEquals(task1, task2, "Задачи не равны при одинаковом ID.");
     }
 
     @Test
     public void epicsAreEqualAtTheSameId() {
-        epic1.setId(1);
-
         Epic epic2 = new Epic("epic2", new ArrayList<>(), Status.DONE);
-        epic2.setId(1);
+        epic2.setId(epicId);
 
         assertEquals(epic1, epic2, "Эпики не равны при одинаковом ID.");
     }
 
     @Test
     public void subTasksAreEqualAtTheSameId() {
-        subtask1.setId(1);
-
         Subtask subtask2 = new Subtask("subtask2", new ArrayList<>(), Status.IN_PROGRESS, epic1.getId());
-        subtask2.setId(1);
+        subtask2.setId(subtaskId);
 
         assertEquals(subtask1, subtask2, "Задания не равны при одинаковом ID.");
     }
@@ -233,5 +226,23 @@ class InMemoryTaskManagerTest {
 
         assertNotNull(history, "История пуста.");
         assertEquals(1, history.size(), "История пуста.");
+    }
+
+    @Test
+    public void historyCheckWithMoreThan10Items() {
+        Task historyFirsTask = manager.getHistory().getFirst();
+        Task savedTask = manager.getTask(taskId);
+
+        for (int i = 0; i < 9; i++) {
+            manager.getTask(taskId);
+        }
+
+        manager.getEpic(epicId);
+
+        Task lastHistoryTask = manager.getHistory().getLast();
+        Task firstHistoryTask = manager.getHistory().getFirst();
+
+        assertEquals(historyFirsTask, lastHistoryTask, "Задачи не совпадают");
+        assertEquals(savedTask, firstHistoryTask, "Задачи не совпадают");
     }
 }
