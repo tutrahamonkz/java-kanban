@@ -1,14 +1,13 @@
 package test;
 
-import manager.HistoryManager;
-import manager.InMemoryTaskManager;
-import manager.Managers;
-import manager.TaskManager;
+import model.Epic;
+import model.Status;
+import model.Subtask;
+import model.Task;
 import org.junit.jupiter.api.Test;
-import tasks.Epic;
-import tasks.Status;
-import tasks.Subtask;
-import tasks.Task;
+import service.HistoryManager;
+import service.Managers;
+import service.TaskManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,8 +90,10 @@ class InMemoryTaskManagerTest {
     public void tasksAreEqualAtTheSameId() {
         Task task1 = new Task("task1", new ArrayList<>(), Status.NEW);
         task1.setId(1);
+
         Task task2 = new Task("task2", new ArrayList<>(), Status.IN_PROGRESS);
         task2.setId(1);
+
         assertEquals(task1, task2, "Задачи не равны при одинаковом ID.");
     }
 
@@ -100,8 +101,10 @@ class InMemoryTaskManagerTest {
     public void epicsAreEqualAtTheSameId() {
         Epic epic1 = new Epic("epic1", new ArrayList<>(), Status.NEW);
         epic1.setId(1);
+
         Epic epic2 = new Epic("epic2", new ArrayList<>(), Status.DONE);
         epic2.setId(1);
+
         assertEquals(epic1, epic2, "Эпики не равны при одинаковом ID.");
     }
 
@@ -109,8 +112,10 @@ class InMemoryTaskManagerTest {
     public void subTasksAreEqualAtTheSameId() {
         Subtask subtask1 = new Subtask("subtask1", new ArrayList<>(), Status.NEW, 1);
         subtask1.setId(1);
+
         Subtask subtask2 = new Subtask("subtask2", new ArrayList<>(), Status.IN_PROGRESS, 2);
         subtask2.setId(1);
+
         assertEquals(subtask1, subtask2, "Задания не равны при одинаковом ID.");
     }
 
@@ -118,15 +123,33 @@ class InMemoryTaskManagerTest {
     public void addTheEpicToItselfAsASubtask() {
         Epic epic = new Epic("epic1", new ArrayList<>(), Status.NEW);
         int epicId = manager.createEpic(epic);
+
         assertFalse(epic.setSubtask(epicId), "Нельзя добавить эпик в свою подзадачу.");
     }
 
     @Test
     public void addASubtaskAsYourEpic() {
         Epic epic = new Epic("epic1", new ArrayList<>(), Status.NEW);
-        int epicId = epic.getId();
+        int epicId = manager.createEpic(epic);
+
         Subtask subtask = new Subtask("subtask", new ArrayList<>(), Status.NEW, epicId);
         int subtaskId = manager.createSubtask(subtask);
+
         assertFalse(subtask.setEpicId(subtaskId), "Нельзя добавить эпик в свою подзадачу.");
+    }
+
+    @Test
+    public void getHistoryCurrentAndHistoryNotEmpty() {
+        Epic epic = new Epic("epic1", new ArrayList<>(), Status.NEW);
+        int epicId = manager.createEpic(epic);
+
+        Epic saveEpic = manager.getEpic(epicId);
+        Epic historyEpic = (Epic) historyManager.getHistory().getFirst();
+
+        assertEquals(saveEpic, historyEpic, "Задачи не совпадают.");
+
+        final ArrayList<Task> history = historyManager.getHistory();
+        assertNotNull(history, "История пустая.");
+        assertEquals(1, history.size(), "История пустая.");
     }
 }
