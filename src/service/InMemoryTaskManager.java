@@ -7,14 +7,16 @@ import model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
 
     public HistoryManager historyManager;
     private static int id = 0;
-    private final HashMap<Integer, Task> tasks;
-    private final HashMap<Integer, Epic> epics;
-    private final HashMap<Integer, Subtask> subtasks;
+    private final Map<Integer, Task> tasks;
+    private final Map<Integer, Epic> epics;
+    private final Map<Integer, Subtask> subtasks;
 
 
     public InMemoryTaskManager(HistoryManager historyManager) {
@@ -34,7 +36,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public HashMap<Integer, Task> getTasks() { // Получение списка всех задач
+    public Map<Integer, Task> getTasks() { // Получение списка всех задач
         if (tasks.isEmpty()) {
             return null;
         }
@@ -79,7 +81,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public HashMap<Integer, Epic> getEpics() { // Получение списка всех эпиков
+    public Map<Integer, Epic> getEpics() { // Получение списка всех эпиков
         if (epics.isEmpty()) {
             return null;
         }
@@ -153,7 +155,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public HashMap<Integer, Subtask> getSubtasks() { // Получение списка всех подзадач
+    public Map<Integer, Subtask> getSubtasks() { // Получение списка всех подзадач
         if (subtasks.isEmpty()) {
             return null;
         } else {
@@ -201,7 +203,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory() {
+    public List<Task> getHistory() {
         return historyManager.getHistory();
     }
 

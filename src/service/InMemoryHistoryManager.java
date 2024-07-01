@@ -3,11 +3,12 @@ package service;
 import model.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
     private static final int COUNT_HISTORY = 10;
-    private static ArrayList<Task> taskHistory;
+    private final List<Task> taskHistory;
 
     public InMemoryHistoryManager() {
         taskHistory = new ArrayList<>();
@@ -24,7 +25,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory() {
+    public List<Task> getHistory() {
         return taskHistory;
     }
 }
