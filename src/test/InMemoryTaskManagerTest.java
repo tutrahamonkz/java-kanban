@@ -10,7 +10,8 @@ import service.Managers;
 import service.TaskManager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,7 +46,7 @@ class InMemoryTaskManagerTest {
         assertNotNull(savedTask, "Задача не найдена.");
         assertEquals(task1, savedTask, "Задачи не совпадают.");
 
-        final HashMap<Integer, Task> tasks = manager.getTasks();
+        final Map<Integer, Task> tasks = manager.getTasks();
 
         assertNotNull(tasks, "Задачи не возвращаются.");
         assertEquals(1, tasks.size(), "Неверное количество задач.");
@@ -61,7 +62,7 @@ class InMemoryTaskManagerTest {
         assertNotNull(savedEpic, "Задача не найдена.");
         assertEquals(epic1, savedEpic, "Задачи не совпадают.");
 
-        final HashMap<Integer, Epic> epics = manager.getEpics();
+        final Map<Integer, Epic> epics = manager.getEpics();
 
         assertNotNull(epics, "Задачи не возвращаются.");
         assertEquals(1, epics.size(), "Неверное количество задач.");
@@ -79,7 +80,7 @@ class InMemoryTaskManagerTest {
         assertNotNull(savedSubtask, "Задача не найдена.");
         assertEquals(subtask1, savedSubtask, "Задачи не совпадают.");
 
-        final HashMap<Integer, Subtask> subtasks = manager.getSubtasks();
+        final Map<Integer, Subtask> subtasks = manager.getSubtasks();
 
         assertNotNull(subtasks, "Задачи не возвращаются.");
         assertEquals(1, subtasks.size(), "Неверное количество задач.");
@@ -211,8 +212,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void getSubtaskByEpic() {
-        ArrayList<Integer> savedEpicSubtaskIdList = manager.getEpic(epicId).getSubtasksId();
-        ArrayList<Integer> subtaskByEpic = manager.getSubtaskByEpic(epicId);
+        List<Integer> savedEpicSubtaskIdList = manager.getEpic(epicId).getSubtasksId();
+        List<Integer> subtaskByEpic = manager.getSubtaskByEpic(epicId);
         assertEquals(subtaskByEpic, savedEpicSubtaskIdList, "Список подзадач отличается");
     }
 
@@ -222,7 +223,7 @@ class InMemoryTaskManagerTest {
 
         assertEquals(savedEpic, historyEpic, "Задачи не совпадают.");
 
-        final ArrayList<Task> history = manager.getHistory();
+        final List<Task> history = manager.getHistory();
 
         assertNotNull(history, "История пуста.");
         assertEquals(1, history.size(), "История пуста.");
