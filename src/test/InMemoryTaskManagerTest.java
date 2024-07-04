@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
 
-    TaskManager manager = Managers.getDefault(Managers.getDefaultHistory());
+    TaskManager manager = Managers.getDefault();
     Task task1;
     Epic epic1;
     Epic savedEpic;
