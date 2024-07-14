@@ -67,6 +67,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeTask(int id) { // Удаление задачи по id
         if (tasks.containsKey(id)) {
             tasks.remove(id);
+            historyManager.remove(id); // Удаляем задачу из истории
         }
     }
 
@@ -128,6 +129,7 @@ public class InMemoryTaskManager implements TaskManager {
                 }
             }
             epics.remove(id); // удаляем эпик
+            historyManager.remove(id); // Удаляем эпик из истории
         }
     }
 
@@ -199,6 +201,7 @@ public class InMemoryTaskManager implements TaskManager {
             subtasks.remove(id);
             epics.get(epicId).getSubtasksId().removeIf(tempId -> tempId.equals(id)); // Удаляем подзадачу в списке эпика
             calculateStatus(epics.get(epicId)); // Пересчитываем статус эпика
+            historyManager.remove(id); // Удаляем подзадачу из истории
         }
     }
 
