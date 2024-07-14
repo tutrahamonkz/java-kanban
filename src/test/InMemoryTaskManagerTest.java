@@ -230,20 +230,25 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void historyCheckWithMoreThan10Items() {
-        Task historyFirsTask = manager.getHistory().getFirst();
+    public void notDuplicateHistoryCurrent() {
+        Epic historyEpic = (Epic) manager.getHistory().getFirst();
         Task savedTask = manager.getTask(taskId);
 
-        for (int i = 0; i < 9; i++) {
-            manager.getTask(taskId);
-        }
+        final List<Task> history = manager.getHistory();
 
-        manager.getEpic(epicId);
+        assertEquals(2, history.size(), "Записи в истории дублируются");
+        assertEquals(history.getFirst(), savedTask, "Дубликат записи из истории удалился не верно");
+        assertEquals(history.get(1), historyEpic, "Дубликат записи из истории удалился не верно");
+    }
 
-        Task lastHistoryTask = manager.getHistory().getLast();
-        Task firstHistoryTask = manager.getHistory().getFirst();
+    @Test
+    public void ifDeleteTaskHistoryAlsoDeleted() {
+        Epic historyEpic = (Epic) manager.getHistory().getFirst();
+        manager.getTask(taskId);
+        manager.getSubtask(subtaskId);
 
-        assertEquals(historyFirsTask, lastHistoryTask, "Задачи не совпадают");
-        assertEquals(savedTask, firstHistoryTask, "Задачи не совпадают");
+        manager.removeEpic(epicId);
+
+        assertFalse(manager.getHistory().contains(historyEpic), "Задача не удалилась.");
     }
 }
