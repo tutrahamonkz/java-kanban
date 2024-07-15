@@ -90,6 +90,8 @@ class InMemoryTaskManagerTest {
         manager.removeSubtask(subtaskId);
 
         assertFalse(subtasks.containsKey(subtaskId), "Подзадача не удалилась.");
+        assertFalse(manager.getEpic(savedSubtask.getEpicId()).getSubtasksId().contains(subtaskId),
+                "Подзадача осталась в эпике.");
     }
 
     @Test
