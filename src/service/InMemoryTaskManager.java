@@ -126,6 +126,7 @@ public class InMemoryTaskManager implements TaskManager {
             if (!epic.getSubtasksId().isEmpty()) { // Проверяем есть ли у эпика подзадачи
                 for (Integer subtaskId : epic.getSubtasksId()) {
                     subtasks.remove(subtaskId); // Удаляем подзадачи удаленного эпика
+                    historyManager.remove(subtaskId); // Удаляем подзадачу из истории
                 }
             }
             epics.remove(id); // удаляем эпик
