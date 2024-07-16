@@ -47,8 +47,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             if (head == null) { // Если в списке не было первого элемента записываем его
                 head = newNode;
             } else {
-                newNode.setPrev(tail);
-                tail.setNext(newNode);
                 newNode.setPrev(tail); // Записываем в голову нового Node ссылку на прошлый хвост в списке
                 tail.setNext(newNode); // Записываем в последний объект в списке ссылку на новый хвост.
             }
@@ -66,8 +64,10 @@ public class InMemoryHistoryManager implements HistoryManager {
                 return null;
             }
             List<Task> tasks = new ArrayList<>();
-            for (Node<Task> node : nodeHistory.values()) {
-                tasks.add(node.getData());
+            Node<Task> node = head; // Помечаем первый объект в списке
+            while (node != null) {
+                tasks.add(node.getData()); // Добавляем задачу в список
+                node = node.getNext(); // Присваем значение следующего элемента
             }
             return tasks;
         }
