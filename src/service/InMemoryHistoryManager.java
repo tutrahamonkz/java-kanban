@@ -73,11 +73,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
 
         private void removeNode(Node<Task> node) {
-            int taskId = node.getData().getId();
-            if (nodeHistory.containsKey(taskId)) {
-                Node<Task> prev = node.getPrev();
-                Node<Task> next = node.getNext();
-                nodeHistory.remove(taskId);
+            if (node != null) {
                 int taskId = node.getData().getId(); // Получаем номер задачи из элемента списка
                 Node<Task> prev = node.getPrev(); // Запоминаем ссылку на предыдущий элемент
                 Node<Task> next = node.getNext(); // Запоминаем ссылку на следующий элемент
