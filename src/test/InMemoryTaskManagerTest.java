@@ -235,6 +235,7 @@ class InMemoryTaskManagerTest {
     public void notDuplicateHistoryCurrent() {
         Epic historyEpic = (Epic) manager.getHistory().getFirst();
         Task savedTask = manager.getTask(taskId);
+        manager.getEpic(epicId);
 
         final List<Task> history = manager.getHistory();
 
