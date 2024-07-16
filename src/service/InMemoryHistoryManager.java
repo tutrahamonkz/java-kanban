@@ -40,19 +40,21 @@ public class InMemoryHistoryManager implements HistoryManager {
             Node<Task> newNode = new Node<>(task);
             int taskId = task.getId();
 
-            if (nodeHistory.containsKey(taskId)) {
+            if (nodeHistory.containsKey(taskId)) { // Если в истории есть задача - удаляем ее
                 removeNode(nodeHistory.get(taskId));
             }
 
-            if (head == null) {
+            if (head == null) { // Если в списке не было первого элемента записываем его
                 head = newNode;
             } else {
                 newNode.setPrev(tail);
                 tail.setNext(newNode);
+                newNode.setPrev(tail); // Записываем в голову нового Node ссылку на прошлый хвост в списке
+                tail.setNext(newNode); // Записываем в последний объект в списке ссылку на новый хвост.
             }
 
-            tail = newNode;
-            nodeHistory.put(taskId, newNode);
+            tail = newNode; // Обновляем последний объект в списке
+            nodeHistory.put(taskId, newNode); // Записываем новый объект
         }
 
         public Node<Task> getNode(int id) {
@@ -60,7 +62,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
 
         public List<Task> getTasks() {
-            if (nodeHistory.isEmpty()) {
+            if (nodeHistory.isEmpty()) { // Если список пустой возвращаем null
                 return null;
             }
             List<Task> tasks = new ArrayList<>();
@@ -76,21 +78,25 @@ public class InMemoryHistoryManager implements HistoryManager {
                 Node<Task> prev = node.getPrev();
                 Node<Task> next = node.getNext();
                 nodeHistory.remove(taskId);
+                int taskId = node.getData().getId(); // Получаем номер задачи из элемента списка
+                Node<Task> prev = node.getPrev(); // Запоминаем ссылку на предыдущий элемент
+                Node<Task> next = node.getNext(); // Запоминаем ссылку на следующий элемент
+                nodeHistory.remove(taskId); // Удаляем элемент из истории
 
-                if (head.equals(node)) {
-                    head = next;
+                if (head.equals(node)) { // Если удаляемый элемент был первым в списке
+                    head = next; // Делаем следующий элемент первым
                 }
 
-                if (tail.equals(node)) {
-                    tail = prev;
+                if (tail.equals(node)) { // Если удаляемый элемент был последним в списке
+                    tail = prev; // Делаем предыдущий элемент последним
                 }
 
-                if (prev != null) {
-                    prev.setNext(next);
+                if (prev != null) { // Если предыдущий элемент существует
+                    prev.setNext(next); // Перезаписываем хвост предыдущего элемента
                 }
 
-                if (next != null) {
-                    next.setPrev(prev);
+                if (next != null) { // Если следующий элемент существует
+                    next.setPrev(prev); // Перезаписываем голову следующего элемента
                 }
             }
         }
