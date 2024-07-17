@@ -46,6 +46,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void clearTasks() { // Удаление всех задач
         if (!tasks.isEmpty()) { // Проверяем что список задач не пустой
+            for (Integer taskId : tasks.keySet()) { // Удаляем задачи из истории
+                historyManager.remove(taskId);
+            }
             tasks.clear();
         }
     }
@@ -92,9 +95,15 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void clearEpics() { // Удаление всех эпиков и подзадач
         if (!epics.isEmpty()) {
+            for (Integer epicId : epics.keySet()) { // Удаляем эпики из истории
+                historyManager.remove(epicId);
+            }
             epics.clear();
         }
         if (!subtasks.isEmpty()) {
+            for (Integer subtaskId : subtasks.keySet()) { // Удаляем подзадачи из истории
+                historyManager.remove(subtaskId);
+            }
             subtasks.clear();
         }
     }
@@ -169,6 +178,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void clearSubtask() { // Удаление всех подзадач
         if (!subtasks.isEmpty()) {
+            for (Integer subtaskId : subtasks.keySet()) { // Удаляем подзадачи из истории
+                historyManager.remove(subtaskId);
+            }
             subtasks.clear();
             for (Epic epic : epics.values()) { // Если подзадачи были очищены меняем статус эпиков
                 epic.getSubtasksId().clear(); // Чистим список подзадач для всех эпиков
