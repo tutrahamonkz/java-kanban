@@ -14,9 +14,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     public HistoryManager historyManager;
     protected static int id = 0;
-    protected Map<Integer, Task> tasks;
-    protected Map<Integer, Epic> epics;
-    protected Map<Integer, Subtask> subtasks;
+    protected static Map<Integer, Task> tasks;
+    protected static Map<Integer, Epic> epics;
+    protected static Map<Integer, Subtask> subtasks;
 
 
     public InMemoryTaskManager() {
