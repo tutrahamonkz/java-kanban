@@ -21,7 +21,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     public static void main(String[] args) {
-        File file = new File("save.csv");
+        File file = null;
+        try {
+            file = File.createTempFile("test", ".csv");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
         ArrayList<String> list = new ArrayList<>();
         list.add("test1");
@@ -41,6 +46,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         manager2.createTask(new Task("task3", list, Status.NEW));
 
         System.out.println(manager2.getTasks());
+
+        if (file.delete()) {
+            System.out.println("Deleted file " + file.getAbsolutePath());
+        } else {
+            System.out.println("Failed to delete file " + file.getAbsolutePath());
+        }
     }
 
     public void save() { // Сохранение данных в файл
