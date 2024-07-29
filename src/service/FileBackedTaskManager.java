@@ -192,7 +192,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 subtask.setId(id);
                 return subtask;
             }
-            case null -> {}
+            case null -> { }
         }
 
         return null;
