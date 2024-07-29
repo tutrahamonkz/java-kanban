@@ -20,29 +20,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         this.file = file;
     }
 
-    public static void main(String[] args) {
-        File file = new File("save.csv");
-        FileBackedTaskManager manager = new FileBackedTaskManager(file);
-        ArrayList<String> list = new ArrayList<>();
-        list.add("test1");
-        list.add("test2");
-        int taskId = manager.createTask(new Task("task1", list, Status.NEW));
-        int epicId = manager.createEpic(new Epic("epic1", list, Status.NEW));
-        int subtaskId = manager.createSubtask(new Subtask("subtask1", list, Status.NEW, epicId));
-        int subtaskId2 = manager.createSubtask(new Subtask("subtask2", list, Status.IN_PROGRESS, epicId));
-        int taskId2 = manager.createTask(new Task("task2", list, Status.DONE));
-        int epic2 = manager.createEpic(new Epic("epic2", list, Status.IN_PROGRESS));
-
-        FileBackedTaskManager manager2 = loadFromFile(file);
-        System.out.println(manager2.getTasks());
-        System.out.println(manager2.getEpics());
-        System.out.println(manager2.getSubtasks());
-
-        manager2.createTask(new Task("task3", list, Status.NEW));
-
-        System.out.println(manager2.getTasks());
-    }
-
     public void save() { // Сохранение данных в файл
         try {
             if (file.exists()) { // Удаляем файл если такой существует
@@ -137,7 +114,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     private static Task fromString(String value) { // Парсим задачу из строки
-        String[] taskToString = value.split(";"); // Разделяем строку по ;
+        String[] taskToString = value.split(";"); // Разделяем строку по ';'
         int id = Integer.parseInt(taskToString[0]);
         TaskType type = stringToTaskType(taskToString[1]);
         String title = taskToString[2];
@@ -181,6 +158,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 subtask.setId(id);
                 return subtask;
             }
+            case null -> {}
         }
 
         return null;
