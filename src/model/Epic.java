@@ -3,12 +3,11 @@ package model;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private final ArrayList<Integer> subtasksId;
+    private ArrayList<Integer> subtasksId;
 
-    public Epic(String title, ArrayList<String> descriptions, Status status, Integer subtaskId) {
+    public Epic(String title, ArrayList<String> descriptions, Status status, ArrayList<Integer> subtaskId) {
         super(title, descriptions, status);
-        subtasksId = new ArrayList<>();
-        subtasksId.add(subtaskId);
+        this.subtasksId = subtaskId;
     }
 
     public Epic(String title, ArrayList<String> descriptions, Status status) {
@@ -23,6 +22,14 @@ public class Epic extends Task {
     public boolean setSubtask(Integer subtaskId) {
         if (this.getId() != subtaskId) {
             subtasksId.add(subtaskId);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean setSubtask(ArrayList<Integer> subtasksId) {
+        if (!subtasksId.contains(this.getId())) {
+            this.subtasksId = subtasksId;
             return true;
         }
         return false;
