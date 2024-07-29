@@ -276,34 +276,34 @@ class FileBackedTaskManagerTest {
     public void savingTaskToFileLoadingTaskAndCheckingCorrectness() {
         TaskManager manager2 = FileBackedTaskManager.loadFromFile(file);
 
-        assertEquals(manager2.getTask(taskId), manager.getTask(taskId), "Задача восстановлена не верно.");
+        assertEquals(manager2.getTask(taskId), manager.getTask(taskId), "Задача восстановлена неверно.");
         assertEquals(manager2.getTask(taskId).getTitle(), manager.getTask(taskId).getTitle(),
-                "Название задачи восстановлено не верно.");
+                "Название задачи восстановлено неверно.");
         assertEquals(manager2.getTask(taskId).getStatus(), manager.getTask(taskId).getStatus(),
-                "Статус задачи восстановлен не верно.");
+                "Статус задачи восстановлен неверно.");
         assertEquals(manager2.getTask(taskId).getDescriptions(), manager.getTask(taskId).getDescriptions(),
-                "Описание задачи восстановлено не верно.");
+                "Описание задачи восстановлено неверно.");
 
-        assertEquals(manager2.getEpic(epicId), manager.getEpic(epicId), "Эпик восстановлен не верно.");
+        assertEquals(manager2.getEpic(epicId), manager.getEpic(epicId), "Эпик восстановлен неверно.");
         assertEquals(manager2.getEpic(epicId).getTitle(), manager.getEpic(epicId).getTitle(),
-                "Название эпика восстановлено не верно.");
+                "Название эпика восстановлено неверно.");
         assertEquals(manager2.getEpic(epicId).getStatus(), manager.getEpic(epicId).getStatus(),
-                "Статус эпика восстановлен не верно.");
+                "Статус эпика восстановлен неверно.");
         assertEquals(manager2.getEpic(epicId).getDescriptions(), manager.getEpic(epicId).getDescriptions(),
-                "Описание эпика восстановлено не верно.");
+                "Описание эпика восстановлено неверно.");
         assertEquals(manager2.getEpic(epicId).getSubtasksId(), manager.getEpic(epicId).getSubtasksId(),
-                "ИД подзадач эпика восстановлены не верно.");
+                "ИД подзадач эпика восстановлены неверно.");
 
         assertEquals(manager2.getSubtask(subtaskId), manager.getSubtask(subtaskId),
-                "Подзадача восстановлена не верно.");
+                "Подзадача восстановлена неверно.");
         assertEquals(manager2.getSubtask(subtaskId).getTitle(), manager.getSubtask(subtaskId).getTitle(),
-                "Название подзадачи восстановлено не верно.");
+                "Название подзадачи восстановлено неверно.");
         assertEquals(manager2.getSubtask(subtaskId).getStatus(), manager.getSubtask(subtaskId).getStatus(),
-                "Статус подзадачи восстановлен не верно.");
+                "Статус подзадачи восстановлен неверно.");
         assertEquals(manager2.getSubtask(subtaskId).getDescriptions(), manager.getSubtask(subtaskId).getDescriptions(),
-                "Описание подзадачи восстановлено не верно.");
+                "Описание подзадачи восстановлено неверно.");
         assertEquals(manager2.getSubtask(subtaskId).getEpicId(), manager.getSubtask(subtaskId).getEpicId(),
-                "ИД эпика подзадачи восстановлен не верно.");
+                "ИД эпика подзадачи восстановлен неверно.");
     }
 
     @Test
