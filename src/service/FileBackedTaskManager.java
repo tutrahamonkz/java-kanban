@@ -152,7 +152,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     private static Task fromString(String value) { // Парсим задачу из строки
         String[] taskToString = value.split(";"); // Разделяем строку по ';'
         int id = Integer.parseInt(taskToString[0]);
-        TaskType type = stringToTaskType(taskToString[1]);
+        TaskType type = Enum.valueOf(TaskType.class, taskToString[1]);
         String title = taskToString[2];
         Status status = stringToStatus(taskToString[3]);
         String subtasksIdOrEpicId = "";
