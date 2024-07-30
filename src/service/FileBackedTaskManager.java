@@ -96,7 +96,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 readFile = Files.readString(file.toPath()); // Считываем все строки из файла
             }
         } catch (IOException e) {
-            throw new RuntimeException("Не удалось загрузить менеджер из файла", e);
+            throw new ManagerSaveException("Не удалось загрузить менеджер из файла");
         }
         String[] readFileSplit = readFile.split("\n"); // Разбиваем данные построчно и помещаем в массив
         for (int i = 1; i < readFileSplit.length; i++) { // начинаем отсчет с 1, так как в 0 индексе FILE_HEADER
