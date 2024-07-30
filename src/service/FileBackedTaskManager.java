@@ -101,12 +101,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         String[] readFileSplit = readFile.split("\n"); // Разбиваем данные построчно и помещаем в массив
         for (int i = 1; i < readFileSplit.length; i++) { // начинаем отсчет с 1, так как в 0 индексе FILE_HEADER
             Task task = fromString(readFileSplit[i]); // Парсим строку в задачу
-            if (task instanceof Epic epic) {
-                manager.addEpic(epic);
-            } else if (task instanceof Subtask subtask) {
-                manager.addSubtask(subtask);
-            } else {
-                manager.addTask(task);
+            if (task != null) {
+                if (task instanceof Epic) {
+                    manager.addEpic((Epic) task);
+                } else if (task instanceof Subtask) {
+                    manager.addSubtask((Subtask) task);
+                } else {
+                    manager.addTask(task);
+                }
             }
         }
 
