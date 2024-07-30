@@ -54,7 +54,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         }
     }
 
-    public void save() { // Сохранение данных в файл
+    private void save() { // Сохранение данных в файл
         try {
             if (file.exists()) { // Удаляем файл если такой существует
                 if (!file.delete()) {
