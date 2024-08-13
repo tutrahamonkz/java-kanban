@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import service.Managers;
 import service.TaskManager;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -251,5 +253,46 @@ class InMemoryTaskManagerTest {
         manager.removeEpic(epicId);
 
         assertFalse(manager.getHistory().contains(historyEpic), "Задача не удалилась.");
+    }
+
+    @Test
+    public void localTimeAndDurationTask() {
+        Task newTask = new Task("new task", new ArrayList<>(), Status.NEW);
+        newTask.setId(taskId);
+        Duration duration = Duration.ofMinutes(30);
+        newTask.setDuration(duration);
+        LocalDateTime time = LocalDateTime.of(2024, 8, 16, 10, 0);
+        newTask.setStartTime(time);
+
+        manager.updateTask(newTask);
+
+        Task savedNewTask = manager.getTask(taskId);
+
+        assertEquals(Duration.ofMinutes(30), savedNewTask.getDuration(), "Время выполнения не сохранилось.");
+        assertEquals(time, savedNewTask.getStartTime(), "Время начала задачи не сохранилось");
+        assertEquals(time.plus(duration), savedNewTask.getEndTime(), "Время окончания задачи вернулось не верно");
+    }
+
+    @Test
+    public void localTimeAndDurationEpic() {
+        Subtask newSubtask = manager.getSubtask(subtaskId);
+        Duration duration = Duration.ofMinutes(30);
+        LocalDateTime time = LocalDateTime.of(2024, 8, 16, 10, 0);
+        newSubtask.setDuration(duration);
+        newSubtask.setStartTime(time);
+
+        manager.updateSubtask(newSubtask);
+
+        int subtaskId2 = manager.createSubtask(new Subtask("subtask2", new ArrayList<>(), Status.IN_PROGRESS,
+                epicId, Duration.ofMinutes(50), LocalDateTime.of(2024, 8, 15, 22, 30)));
+
+        Subtask savedNewSubtask = manager.getSubtask(subtaskId2);
+        Epic savedNewEpic = manager.getEpic(epicId);
+
+        assertEquals(savedNewEpic.getDuration().toMinutes(), duration.plus(savedNewSubtask.getDuration()).toMinutes()
+                , "Продолжительность эпика посчитана не верно");
+        assertEquals(savedNewEpic.getStartTime(), savedNewSubtask.getStartTime(), "Время начала эпика " +
+                "выбрано не верно");
+        assertEquals(savedNewEpic.getEndTime(), time.plus(duration), "Время окончания эпика рассчитано не верно");
     }
 }
