@@ -5,10 +5,9 @@ import model.Status;
 import model.Subtask;
 import model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -123,7 +122,7 @@ public class InMemoryTaskManager implements TaskManager {
                     return;
                 }
             }
-            calculateStatus(epic);
+            calculateEpicParam(epic);
             epics.put(epic.getId(), epic);
         }
     }
@@ -156,14 +155,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Integer createSubtask(Subtask subtask) { // Создание подзадачи
-            if (!subtasks.containsKey(subtask.getId()) && subtask.getEpicId() != 0) { // Создаём подзадачу только если есть эпик
-                subtask.setId(++id);
-                subtasks.put(subtask.getId(), subtask);
-                Integer epicId = subtask.getEpicId();
-                epics.get(epicId).getSubtasksId().add(subtask.getId()); // Добавляем подзадачу в список подзадач эпика
-                calculateStatus(epics.get(epicId));
-            }
-            return subtask.getId();
+        if (!subtasks.containsKey(subtask.getId()) && subtask.getEpicId() != 0) { // Создаём подзадачу только если есть эпик
+            subtask.setId(++id);
+            subtasks.put(subtask.getId(), subtask);
+            // Integer epicId = subtask.getEpicId();
+            Epic epic = epics.get(subtask.getEpicId());
+            epic.getSubtasksId().add(subtask.getId()); // Добавляем подзадачу в список подзадач эпика
+            calculateEpicParam(epic);
+        }
+        return subtask.getId();
     }
 
     @Override
@@ -184,7 +184,7 @@ public class InMemoryTaskManager implements TaskManager {
             subtasks.clear();
             for (Epic epic : epics.values()) { // Если подзадачи были очищены меняем статус эпиков
                 epic.getSubtasksId().clear(); // Чистим список подзадач для всех эпиков
-                calculateStatus(epic);
+                calculateEpicParam(epic);
             }
         }
     }
@@ -200,9 +200,10 @@ public class InMemoryTaskManager implements TaskManager {
         int idSubtask = subtask.getId();
         if (subtasks.containsKey(idSubtask)) {
             if (subtask.setEpicId(subtask.getEpicId()) && epics.containsKey(subtask.getEpicId())) { // Проверяем что
-                                                    // ID подзадачи не совпадает с ID эпика и такой эпик существует
+                // ID подзадачи не совпадает с ID эпика и такой эпик существует
                 subtasks.put(idSubtask, subtask);
-                calculateStatus(epics.get(subtask.getEpicId())); // Обновляем статус эпика
+                Epic epic = epics.get(subtask.getEpicId());
+                calculateEpicParam(epic);
             }
         }
     }
@@ -210,10 +211,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeSubtask(int id) { // Удаление подзадачи по id
         if (subtasks.containsKey(id)) {
-            int epicId = subtasks.get(id).getEpicId();
+            Epic epic = epics.get(subtasks.get(id).getEpicId());
             subtasks.remove(id);
-            epics.get(epicId).getSubtasksId().removeIf(tempId -> tempId.equals(id)); // Удаляем подзадачу в списке эпика
-            calculateStatus(epics.get(epicId)); // Пересчитываем статус эпика
+            epic.getSubtasksId().removeIf(tempId -> tempId.equals(id)); // Удаляем подзадачу в списке эпика
+            calculateEpicParam(epic);
             historyManager.remove(id); // Удаляем подзадачу из истории
         }
     }
@@ -244,6 +245,16 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(Status.DONE);
         } else {
             epic.setStatus(Status.IN_PROGRESS);
+        }
+    }
+    private void calculateEpicParam(Epic epic) { // Установка эпику всех рассчитываемых полей
+        if (!epic.getSubtasksId().isEmpty()) {
+            calculateStatus(epic);
+            calculateDuration(epic);
+            setStartTime(epic);
+            setEndTime(epic);
+        } else {
+            calculateStatus(epic);
         }
     }
 }
