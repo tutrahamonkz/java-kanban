@@ -82,6 +82,13 @@ public class Task {
         this.startTime = startTime;
     }
 
+    public LocalDateTime getEndTime() {
+        if (startTime != null) {
+            return startTime.plus(duration);
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
