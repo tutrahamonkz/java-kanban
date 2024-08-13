@@ -77,7 +77,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Integer createEpic(Epic epic) { // Создание эпика
         if (!epics.containsKey(epic.getId())) {
             epic.setId(++id);
-            calculateStatus(epic);
+            calculateEpicParam(epic);
             epics.put(epic.getId(), epic);
         }
         return epic.getId();
@@ -247,6 +247,33 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(Status.IN_PROGRESS);
         }
     }
+
+    private void calculateDuration(Epic epic) { // Расчет времени выполнения эпика
+                epic.setDuration(Duration.ofMinutes(epic.getSubtasksId().stream()
+                .map(id -> subtasks.get(id).getDuration())
+                .filter(Objects::nonNull)
+                .mapToLong(Duration::toMinutes)
+                .sum()));
+    }
+
+    private void setStartTime(Epic epic) { // Установка минимального времени начала подзадачи эпику
+        epic.setStartTime(epic.getSubtasksId().stream()
+                .map(id -> subtasks.get(id).getStartTime())
+                .filter(Objects::nonNull)
+                .min(LocalDateTime::compareTo)
+                .orElse(null)
+        );
+    }
+
+    private void setEndTime(Epic epic) { // Установка максимального времени завершения подзадачи эпику
+        epic.setEndTime(epic.getSubtasksId().stream()
+                .map(id -> subtasks.get(id).getEndTime())
+                .filter(Objects::nonNull)
+                .max(LocalDateTime::compareTo)
+                .orElse(null)
+        );
+    }
+
     private void calculateEpicParam(Epic epic) { // Установка эпику всех рассчитываемых полей
         if (!epic.getSubtasksId().isEmpty()) {
             calculateStatus(epic);
