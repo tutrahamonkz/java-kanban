@@ -38,6 +38,15 @@ public class Epic extends Task {
     }
 
     @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    @Override
     public String toString() {
         String template = "Epic{title='%s', id=%d, status=%s, subtasks=%d, duration=%d, endTime=%s}";
         return String.format(template, getTitle(), getId(), getStatus(), getSubtasksId().size()
