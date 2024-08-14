@@ -5,6 +5,8 @@ import model.Task;
 import service.Managers;
 import service.TaskManager;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,12 +25,20 @@ public class Main {
         int epicId1 = manager.createEpic(epic1);
         int epicId2 = manager.createEpic(epic2);
         // Создаём и добавляем подзадачи в менеджер
-        Subtask subtask1 = new Subtask("subtask1", new ArrayList<>(), Status.NEW, epicId1);
-        Subtask subtask2 = new Subtask("subtask2", new ArrayList<>(), Status.NEW, epicId1);
+        Subtask subtask1 = new Subtask("subtask1", new ArrayList<>(), Status.NEW, epicId1,
+                Duration.ofMinutes(30), LocalDateTime.of(1989, 4, 12, 12, 0));
+        Subtask subtask2 = new Subtask("subtask2", new ArrayList<>(), Status.IN_PROGRESS, epicId1,
+                Duration.ofMinutes(83), LocalDateTime.now());
         Subtask subtask3 = new Subtask("subtask3", new ArrayList<>(), Status.NEW, epicId1);
         int subtaskId1 = manager.createSubtask(subtask1);
         int subtaskId2 = manager.createSubtask(subtask2);
         int subtaskId3 = manager.createSubtask(subtask3);
+
+        //Выводим PrioritizedTasks
+        System.out.println();
+        System.out.println("PrioritizedTasks");
+        manager.getPrioritizedTasks().forEach(System.out::println);
+        System.out.println();
         // Заполняем историю и выводим в консоль результаты
         manager.getTask(taskId2);
         printHistory(manager.getHistory());
