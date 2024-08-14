@@ -21,7 +21,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     public static void main(String[] args) {
-        File file = null;
+        File file;
         try {
             file = File.createTempFile("test", ".csv");
         } catch (IOException e) {
@@ -33,8 +33,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         list.add("test2");
         int taskId = manager.createTask(new Task("task1", list, Status.NEW));
         int epicId = manager.createEpic(new Epic("epic1", list, Status.NEW));
-        int subtaskId = manager.createSubtask(new Subtask("subtask1", list, Status.NEW, epicId));
-        int subtaskId2 = manager.createSubtask(new Subtask("subtask2", list, Status.IN_PROGRESS, epicId));
+        int subtaskId = manager.createSubtask(new Subtask("subtask1", list, Status.NEW, epicId,
+                Duration.ofMinutes(30), LocalDateTime.of(1989, 4, 12, 12, 0)));
+        int subtaskId2 = manager.createSubtask(new Subtask("subtask2", list, Status.IN_PROGRESS, epicId,
+                Duration.ofMinutes(83), LocalDateTime.now()));
         int taskId2 = manager.createTask(new Task("task2", list, Status.DONE));
         int epic2 = manager.createEpic(new Epic("epic2", list, Status.IN_PROGRESS));
 
@@ -46,6 +48,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         manager2.createTask(new Task("task3", list, Status.NEW));
 
         System.out.println(manager2.getTasks());
+
+        manager2.getPrioritizedTasks().forEach(System.out::println);
 
         if (file.delete()) {
             System.out.println("Deleted file " + file.getAbsolutePath());
@@ -205,15 +209,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             case "NEW" -> Status.NEW;
             case "IN_PROGRESS" -> Status.IN_PROGRESS;
             case "DONE" -> Status.DONE;
-            default -> null;
-        };
-    }
-
-    private static TaskType stringToTaskType(String value) { // Парсим строку в тип задачи
-        return switch (value) {
-            case "TASK" -> TaskType.TASK;
-            case "EPIC" -> TaskType.EPIC;
-            case "SUBTASK" -> TaskType.SUBTASK;
             default -> null;
         };
     }
