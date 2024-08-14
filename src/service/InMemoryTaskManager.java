@@ -27,7 +27,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Integer createTask(Task task) { // Создание задачи
-        if (!tasks.containsKey(task.getId()) && checkNonIntersectionsTask(task)) { // Проверяем что такой задачи нет в списке
+        if (checkNonIntersectionsTask(task)) { // Проверяем что такой задачи нет в списке
             task.setId(++id);
             tasks.put(task.getId(), task);
         }
@@ -75,11 +75,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Integer createEpic(Epic epic) { // Создание эпика
-        if (!epics.containsKey(epic.getId())) {
-            epic.setId(++id);
-            calculateEpicParam(epic);
-            epics.put(epic.getId(), epic);
-        }
+        epic.setId(++id);
+        calculateEpicParam(epic);
+        epics.put(epic.getId(), epic);
+
         return epic.getId();
     }
 
@@ -155,10 +154,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Integer createSubtask(Subtask subtask) { // Создание подзадачи
-        if (!subtasks.containsKey(subtask.getId()) && subtask.getEpicId() != 0 && checkNonIntersectionsTask(subtask)) { // Создаём подзадачу только если есть эпик
+        if (subtask.getEpicId() != 0 && checkNonIntersectionsTask(subtask)) { // Создаём подзадачу только если есть эпик
             subtask.setId(++id);
             subtasks.put(subtask.getId(), subtask);
-            // Integer epicId = subtask.getEpicId();
             Epic epic = epics.get(subtask.getEpicId());
             epic.getSubtasksId().add(subtask.getId()); // Добавляем подзадачу в список подзадач эпика
             calculateEpicParam(epic);
@@ -276,7 +274,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void calculateDuration(Epic epic) { // Расчет времени выполнения эпика
-                epic.setDuration(Duration.ofMinutes(epic.getSubtasksId().stream()
+        epic.setDuration(Duration.ofMinutes(epic.getSubtasksId().stream()
                 .map(id -> subtasks.get(id).getDuration())
                 .filter(Objects::nonNull)
                 .mapToLong(Duration::toMinutes)
