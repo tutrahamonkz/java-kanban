@@ -27,7 +27,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Integer createTask(Task task) { // Создание задачи
-        if (!tasks.containsKey(task.getId())) { // Если задача есть в списке
+        if (!tasks.containsKey(task.getId()) && checkNonIntersectionsTask(task)) { // Проверяем что такой задачи нет в списке
             task.setId(++id);
             tasks.put(task.getId(), task);
         }
@@ -60,7 +60,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) { // Обновление задачи
-        if (tasks.containsKey(task.getId())) { // Если задача есть в списке
+        if (tasks.containsKey(task.getId()) && checkNonIntersectionsTask(task)) { // Если задача есть в списке
             tasks.put(task.getId(), task);
         }
     }
@@ -155,7 +155,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Integer createSubtask(Subtask subtask) { // Создание подзадачи
-        if (!subtasks.containsKey(subtask.getId()) && subtask.getEpicId() != 0) { // Создаём подзадачу только если есть эпик
+        if (!subtasks.containsKey(subtask.getId()) && subtask.getEpicId() != 0 && checkNonIntersectionsTask(subtask)) { // Создаём подзадачу только если есть эпик
             subtask.setId(++id);
             subtasks.put(subtask.getId(), subtask);
             // Integer epicId = subtask.getEpicId();
@@ -198,7 +198,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubtask(Subtask subtask) { // Обновление подзадачи
         int idSubtask = subtask.getId();
-        if (subtasks.containsKey(idSubtask)) {
+        if (subtasks.containsKey(idSubtask) && checkNonIntersectionsTask(subtask)) {
             if (subtask.setEpicId(subtask.getEpicId()) && epics.containsKey(subtask.getEpicId())) { // Проверяем что
                 // ID подзадачи не совпадает с ID эпика и такой эпик существует
                 subtasks.put(idSubtask, subtask);
@@ -237,6 +237,18 @@ public class InMemoryTaskManager implements TaskManager {
         setTasks.addAll(tasksNotNull);
         setTasks.addAll(subtasksNotNull);
         return setTasks.stream().toList();
+    }
+
+    private boolean checkNonIntersectionsTask(Task task) {
+        LocalDateTime startTime = task.getStartTime();
+        LocalDateTime endTime = task.getEndTime();
+        List<Task> prioritizedList = getPrioritizedTasks();
+        if (startTime != null && !prioritizedList.isEmpty()) {
+            return prioritizedList.stream()
+                    .anyMatch(checkTask -> checkTask.getStartTime().isAfter(endTime) ||
+                            checkTask.getEndTime().isBefore(startTime));
+        }
+        return true;
     }
 
     private void calculateStatus(Epic epic) { // Расчет статуса эпика
