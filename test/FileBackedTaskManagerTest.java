@@ -1,16 +1,17 @@
+import exception.ManagerSaveException;
 import model.Epic;
 import model.Status;
 import model.Subtask;
 import model.Task;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import service.FileBackedTaskManager;
 import service.TaskManager;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -119,5 +120,22 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
         assertEquals(savedTask.getTitle(), savedNewTask.getTitle(),
                 "Обновленная задача не сохранилась в файл");
+    }
+
+    @Test
+    public void checkFileLoadThrows() {
+        Assertions.assertThrows(ManagerSaveException.class, () ->{
+            FileBackedTaskManager.loadFromFile(Paths.get("test").toFile());
+        }, "Обращение к несуществующему файлу должно приводить к исключению");
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write("test");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Assertions.assertThrows(ManagerSaveException.class, () ->{
+            FileBackedTaskManager.loadFromFile(file);
+        }, "Обращение к неправильно составленному файлу должно приводить к исключению");
     }
 }
