@@ -23,44 +23,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         this.file = file;
     }
 
-    public static void main(String[] args) {
-        File file;
-        try {
-            file = File.createTempFile("test", ".csv");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        FileBackedTaskManager manager = new FileBackedTaskManager(file);
-        ArrayList<String> list = new ArrayList<>();
-        list.add("test1");
-        list.add("test2");
-        int taskId = manager.createTask(new Task("task1", list, Status.NEW));
-        int epicId = manager.createEpic(new Epic("epic1", list, Status.NEW));
-        int subtaskId = manager.createSubtask(new Subtask("subtask1", list, Status.NEW, epicId,
-                Duration.ofMinutes(30), LocalDateTime.of(1989, 4, 12, 12, 0)));
-        int subtaskId2 = manager.createSubtask(new Subtask("subtask2", list, Status.IN_PROGRESS, epicId,
-                Duration.ofMinutes(83), LocalDateTime.now()));
-        int taskId2 = manager.createTask(new Task("task2", list, Status.DONE));
-        int epic2 = manager.createEpic(new Epic("epic2", list, Status.IN_PROGRESS));
-
-        FileBackedTaskManager manager2 = loadFromFile(file);
-        System.out.println(manager2.getTasks());
-        System.out.println(manager2.getEpics());
-        System.out.println(manager2.getSubtasks());
-
-        manager2.createTask(new Task("task3", list, Status.NEW));
-
-        System.out.println(manager2.getTasks());
-
-        manager2.getPrioritizedTasks().forEach(System.out::println);
-
-        if (file.delete()) {
-            System.out.println("Deleted file " + file.getAbsolutePath());
-        } else {
-            System.out.println("Failed to delete file " + file.getAbsolutePath());
-        }
-    }
-
     private void save() { // Сохранение данных в файл
         try {
             if (file.exists()) { // Удаляем файл если такой существует
