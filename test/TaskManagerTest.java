@@ -298,4 +298,35 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 "выбрано не верно");
         assertEquals(savedNewEpic.getEndTime(), time.plus(duration), "Время окончания эпика рассчитано не верно");
     }
+
+    @Test
+    public void checkEpicStatus() {
+        int subtaskId2 = manager.createSubtask(new Subtask("subtask2", new ArrayList<>(), Status.NEW, epicId));
+        int subtaskId3 = manager.createSubtask(new Subtask("subtask3", new ArrayList<>(), Status.NEW, epicId));
+        Subtask subtask2 = manager.getSubtask(subtaskId2);
+        Subtask subtask3 = manager.getSubtask(subtaskId3);
+
+        assertEquals(manager.getEpic(epicId).getStatus(), Status.NEW, "Ожидался статус NEW");
+
+        subtask1.setStatus(Status.DONE);
+        subtask2.setStatus(Status.DONE);
+        manager.updateSubtask(subtask1);
+        manager.updateSubtask(subtask2);
+
+        assertEquals(manager.getEpic(epicId).getStatus(), Status.IN_PROGRESS, "Ожидался статус IN_PROGRESS");
+
+        subtask3.setStatus(Status.DONE);
+        manager.updateSubtask(subtask3);
+
+        assertEquals(manager.getEpic(epicId).getStatus(), Status.DONE, "Ожидался статус DONE");
+
+        subtask1.setStatus(Status.IN_PROGRESS);
+        subtask2.setStatus(Status.IN_PROGRESS);
+        subtask3.setStatus(Status.IN_PROGRESS);
+        manager.updateSubtask(subtask1);
+        manager.updateSubtask(subtask2);
+        manager.updateSubtask(subtask3);
+
+        assertEquals(manager.getEpic(epicId).getStatus(), Status.IN_PROGRESS, "Ожидался статус IN_PROGRESS");
+    }
 }
