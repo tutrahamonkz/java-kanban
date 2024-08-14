@@ -135,14 +135,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         return String.join(";", subtaskToString);
     }
 
-    private String durationToString(Duration duration) {
+    private String durationToString(Duration duration) { // Парсим продолжительность задачи в строку если она не задана
         if (duration == null) {
             return "null";
         }
         return String.valueOf(duration.toMinutes());
     }
 
-    private String timeToString(LocalDateTime time) {
+    private String timeToString(LocalDateTime time) { // Парсим время в строку если время не задано
         if (time == null) {
             return "null";
         }
@@ -163,13 +163,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         Duration duration;
         LocalDateTime startTime;
 
-        if (durationString.equals("null")) {
+        if (durationString.equals("null")) { // Проверяем была ли задана продолжительность задачи
             duration = Duration.ZERO;
         } else {
             duration = Duration.ofMinutes(Long.parseLong(durationString));
         }
 
-        if (!startTimeString.equals("null")) {
+        if (!startTimeString.equals("null")) { // Проверяем было ли задано время начала задачи
             startTime = LocalDateTime.parse(startTimeString);
         } else startTime = null;
 

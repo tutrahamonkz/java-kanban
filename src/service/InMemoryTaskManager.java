@@ -27,7 +27,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Integer createTask(Task task) { // Создание задачи
-        if (checkNonIntersectionsTask(task)) { // Проверяем что такой задачи нет в списке
+        if (checkNonIntersectionsTask(task)) { // Проверяем что задача не пересекается по времени с другими задачами
             task.setId(++id);
             tasks.put(task.getId(), task);
         }
@@ -60,7 +60,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) { // Обновление задачи
-        if (tasks.containsKey(task.getId()) && checkNonIntersectionsTask(task)) { // Если задача есть в списке
+        // Если задача есть в списке и не пересекается с другими задачами
+        if (tasks.containsKey(task.getId()) && checkNonIntersectionsTask(task)) {
             tasks.put(task.getId(), task);
         }
     }
@@ -154,7 +155,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Integer createSubtask(Subtask subtask) { // Создание подзадачи
-        if (subtask.getEpicId() != 0 && checkNonIntersectionsTask(subtask)) { // Создаём подзадачу только если есть эпик
+        // Создаём подзадачу только если есть эпик и не пересекается время начала работы с другими задачами
+        if (subtask.getEpicId() != 0 && checkNonIntersectionsTask(subtask)) {
             subtask.setId(++id);
             subtasks.put(subtask.getId(), subtask);
             Epic epic = epics.get(subtask.getEpicId());
@@ -196,9 +198,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubtask(Subtask subtask) { // Обновление подзадачи
         int idSubtask = subtask.getId();
+        // Проверяем что есть подзадача с таким ИД и она не пересекается по времени с другими задачами
         if (subtasks.containsKey(idSubtask) && checkNonIntersectionsTask(subtask)) {
-            if (subtask.setEpicId(subtask.getEpicId()) && epics.containsKey(subtask.getEpicId())) { // Проверяем что
-                // ID подзадачи не совпадает с ID эпика и такой эпик существует
+            // Проверяем что ID подзадачи не совпадает с ID эпика и такой эпик существует
+            if (subtask.setEpicId(subtask.getEpicId()) && epics.containsKey(subtask.getEpicId())) {
                 subtasks.put(idSubtask, subtask);
                 Epic epic = epics.get(subtask.getEpicId());
                 calculateEpicParam(epic);
@@ -224,12 +227,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getPrioritizedTasks() {
-        TreeSet<Task> setTasks = new TreeSet<>((task1, task2) ->
+        TreeSet<Task> setTasks = new TreeSet<>((task1, task2) -> // Сортируем задачи по времени начала работы
                 task1.getStartTime().isAfter(task2.getStartTime()) ? 1 : -1);
-        List<Task> tasksNotNull = tasks.values().stream()
+        List<Task> tasksNotNull = tasks.values().stream() // Убираем задачи с незаданным временем
                 .filter(task -> task.getStartTime() != null)
                 .toList();
-        List<Subtask> subtasksNotNull = subtasks.values().stream()
+        List<Subtask> subtasksNotNull = subtasks.values().stream() // Убираем задачи с незаданным временем
                 .filter(subtask -> subtask.getStartTime() != null)
                 .toList();
         setTasks.addAll(tasksNotNull);
@@ -237,13 +240,15 @@ public class InMemoryTaskManager implements TaskManager {
         return setTasks.stream().toList();
     }
 
-    private boolean checkNonIntersectionsTask(Task task) {
+    private boolean checkNonIntersectionsTask(Task task) { // Возвращаем true если нет пересечений
         LocalDateTime startTime = task.getStartTime();
         LocalDateTime endTime = task.getEndTime();
         List<Task> prioritizedList = getPrioritizedTasks();
-        if (startTime != null && !prioritizedList.isEmpty()) {
+        if (startTime != null && !prioritizedList.isEmpty()) { // Если время заданно и есть с чем сравнивать
             return prioritizedList.stream()
+                    // Проверяем что работа над первой задачей, начнется позже, чем закончится вторая задача
                     .anyMatch(checkTask -> checkTask.getStartTime().isAfter(endTime) ||
+                            // Проверяем что работа над первой задачей, закончится раньше, чем начнется вторая задача
                             checkTask.getEndTime().isBefore(startTime));
         }
         return true;
@@ -264,7 +269,8 @@ public class InMemoryTaskManager implements TaskManager {
                 }
             }
         }
-        if (countNew == epicSubtask.size() || epicSubtask.isEmpty()) { // В зависимости от количества подзадач и их статусов назначаем статус эпику
+        // В зависимости от количества подзадач и их статусов назначаем статус эпику
+        if (countNew == epicSubtask.size() || epicSubtask.isEmpty()) {
             epic.setStatus(Status.NEW);
         } else if (countDone == epicSubtask.size()) {
             epic.setStatus(Status.DONE);
