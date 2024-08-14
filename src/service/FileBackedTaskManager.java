@@ -68,6 +68,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             throw new ManagerSaveException("Не удалось загрузить менеджер из файла");
         }
         String[] readFileSplit = readFile.split("\n"); // Разбиваем данные построчно и помещаем в массив
+        if (!readFileSplit[0].equals(FILE_HEADER)) {
+            throw new ManagerSaveException("Выбран не верный файл для загрузки или файл поврежден.");
+        }
         for (int i = 1; i < readFileSplit.length; i++) { // начинаем отсчет с 1, так как в 0 индексе FILE_HEADER
             Task task = fromString(readFileSplit[i]); // Парсим строку в задачу
             if (task != null) {
