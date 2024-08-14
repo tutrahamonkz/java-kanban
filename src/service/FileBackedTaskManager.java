@@ -135,7 +135,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 TaskType.TASK.toString(),
                 task.getTitle(),
                 task.getStatus().toString(),
-                task.getDescriptions().toString().replace(" ", "")};
+                task.getDescriptions().toString().replace(" ", ""),
+                durationToString(task.getDuration()),
+                timeToString(task.getStartTime())
+        };
         return String.join(";", taskToString);
     }
 
@@ -146,7 +149,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 epic.getTitle(),
                 epic.getStatus().toString(),
                 epic.getDescriptions().toString().replace(" ", ""),
-                epic.getSubtasksId().toString().replace(" ", "")};
+                durationToString(epic.getDuration()),
+                timeToString(epic.getStartTime()),
+                epic.getSubtasksId().toString().replace(" ", "")
+        };
         return String.join(";", epicToString);
     }
 
@@ -157,8 +163,25 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 subtask.getTitle(),
                 subtask.getStatus().toString(),
                 subtask.getDescriptions().toString().replace(" ", ""),
-                Integer.toString(subtask.getEpicId())};
+                durationToString(subtask.getDuration()),
+                timeToString(subtask.getStartTime()),
+                Integer.toString(subtask.getEpicId())
+        };
         return String.join(";", subtaskToString);
+    }
+
+    private String durationToString(Duration duration) {
+        if (duration == null) {
+            return "null";
+        }
+        return String.valueOf(duration.toMinutes());
+    }
+
+    private String timeToString(LocalDateTime time) {
+        if (time == null) {
+            return "null";
+        }
+        return time.toString();
     }
 
     private static Task fromString(String value) { // Парсим задачу из строки
@@ -170,9 +193,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         String subtasksIdOrEpicId = "";
         ArrayList<String> description = new ArrayList<>();
         String descriptions = taskToString[4].substring(1, taskToString[4].length() - 1); // Обрезаем квадратные скобки
+        String durationString = taskToString[5];
+        String startTimeString = taskToString[6];
+        Duration duration;
+        LocalDateTime startTime;
 
-        if (taskToString.length == 6) { // Если эпик или подзадача
-            subtasksIdOrEpicId = taskToString[5];
+        if (durationString.equals("null")) {
+            duration = Duration.ZERO;
+        } else {
+            duration = Duration.ofMinutes(Long.parseLong(durationString));
+        }
+
+        if (!startTimeString.equals("null")) {
+            startTime = LocalDateTime.parse(startTimeString);
+        } else startTime = null;
+
+        if (taskToString.length == 8) { // Если эпик или подзадача
+            subtasksIdOrEpicId = taskToString[7];
         }
 
         if (!descriptions.isEmpty()) { // Если есть описания парсим их в список
@@ -182,12 +219,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
         switch (type) {
             case TaskType.TASK -> { // Возвращаем считанную задачу с полученным id
-                Task task = new Task(title, description, status);
+                Task task = new Task(title, description, status, duration, startTime);
                 task.setId(id);
                 return task;
             }
             case TaskType.EPIC -> { // Возвращаем считанный эпик с полученным id и подзадачами
-                subtasksIdOrEpicId = taskToString[5].substring(1, taskToString[5].length() - 1); // Обрезаем скобки
+                subtasksIdOrEpicId = taskToString[7].substring(1, taskToString[7].length() - 1); // Обрезаем скобки
                 ArrayList<Integer> subtasksId = new ArrayList<>();
                 if (!subtasksIdOrEpicId.isEmpty()) { // Если строка не пустая и есть подзадачи
                     String[] subtasksIdArray = subtasksIdOrEpicId.split(","); // Разделяем подзадачи
@@ -202,11 +239,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             }
             case TaskType.SUBTASK -> { // Возвращаем считанную подзадачу
                 int epicId = Integer.parseInt(subtasksIdOrEpicId);
-                Subtask subtask = new Subtask(title, description, status, epicId);
+                Subtask subtask = new Subtask(title, description, status, epicId, duration, startTime);
                 subtask.setId(id);
                 return subtask;
             }
-            case null -> { }
         }
 
         return null;
