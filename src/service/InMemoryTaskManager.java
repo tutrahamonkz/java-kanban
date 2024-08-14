@@ -247,9 +247,9 @@ public class InMemoryTaskManager implements TaskManager {
         if (startTime != null && !prioritizedList.isEmpty()) { // Если время заданно и есть с чем сравнивать
             return prioritizedList.stream()
                     // Проверяем что работа над первой задачей, начнется позже, чем закончится вторая задача
-                    .anyMatch(checkTask -> checkTask.getStartTime().isAfter(endTime) ||
+                    .noneMatch(checkTask -> !checkTask.getStartTime().isAfter(endTime) &&
                             // Проверяем что работа над первой задачей, закончится раньше, чем начнется вторая задача
-                            checkTask.getEndTime().isBefore(startTime));
+                            !checkTask.getEndTime().isBefore(startTime));
         }
         return true;
     }
