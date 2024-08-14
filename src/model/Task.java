@@ -104,7 +104,7 @@ public class Task {
 
     @Override
     public String toString() {
-        String template = "Task{title='%s', descriptions=%d, id=%d, status=%s, duration=%d, startTime=%s}";
-        return String.format(template, title, descriptions.size(), id, status, duration.toMinutes(), startTime);
+        String template = "Task{title='%s', descriptions=%d, id=%d, status=%s, duration=%s, startTime=%s}";
+        return String.format(template, title, descriptions.size(), id, status, duration, startTime);
     }
 }

@@ -31,8 +31,8 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        String template = "Subtask{title='%s', descriptions=%d, id=%d, status=%s, epicId=%d, duration=%d, startTime=%s}";
+        String template = "Subtask{title='%s', descriptions=%d, id=%d, status=%s, epicId=%d, duration=%s, startTime=%s}";
         return String.format(template, getTitle(), getDescriptions().size(), getId(), getStatus(), epicId
-                , getDuration().toMinutes(), getStartTime());
+                , getDuration(), getStartTime());
     }
 }

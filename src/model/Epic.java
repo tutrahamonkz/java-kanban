@@ -48,8 +48,8 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        String template = "Epic{title='%s', id=%d, status=%s, subtasks=%d, duration=%d, endTime=%s}";
+        String template = "Epic{title='%s', id=%d, status=%s, subtasks=%d, duration=%s, startTime=%s, endTime=%s}";
         return String.format(template, getTitle(), getId(), getStatus(), getSubtasksId().size()
-                , getDuration().toMinutes(), getEndTime());
+                , getDuration(), getStartTime(), getEndTime());
     }
 }
