@@ -224,6 +224,21 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        TreeSet<Task> setTasks = new TreeSet<>((task1, task2) ->
+                task1.getStartTime().isAfter(task2.getStartTime()) ? 1 : -1);
+        List<Task> tasksNotNull = tasks.values().stream()
+                .filter(task -> task.getStartTime() != null)
+                .toList();
+        List<Subtask> subtasksNotNull = subtasks.values().stream()
+                .filter(subtask -> subtask.getStartTime() != null)
+                .toList();
+        setTasks.addAll(tasksNotNull);
+        setTasks.addAll(subtasksNotNull);
+        return setTasks.stream().toList();
+    }
+
     private void calculateStatus(Epic epic) { // Расчет статуса эпика
         int countNew = 0;
         int countDone = 0;
@@ -274,7 +289,7 @@ public class InMemoryTaskManager implements TaskManager {
         );
     }
 
-    private void calculateEpicParam(Epic epic) { // Установка эпику всех рассчитываемых полей
+    protected void calculateEpicParam(Epic epic) { // Установка эпику всех рассчитываемых полей
         if (!epic.getSubtasksId().isEmpty()) {
             calculateStatus(epic);
             calculateDuration(epic);
