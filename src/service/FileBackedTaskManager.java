@@ -8,12 +8,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
     private final File file; // Файл для сохранения
-    private static final String FILE_HEADER = "id;type;title;status;description;epicId/subtasksId"; // Первая строка в файле
+    // Первая строка в файле
+    private static final String FILE_HEADER = "id;type;title;status;description;duration;startTime;epicId/subtasksId";
     private int maxId = 0; // Для восстановления id после загрузки из файла
 
     public FileBackedTaskManager(File file) {
@@ -114,6 +117,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                     manager.addTask(task);
                 }
             }
+        }
+
+        for (Epic epic : epics.values()) { // Пересчитываем параметры загруженных эпиков
+            manager.calculateEpicParam(epic);
+            epics.put(epic.getId(), epic);
         }
 
         id = manager.maxId; // Присваиваем восстановленный индекс текущему, для продолжения работы
