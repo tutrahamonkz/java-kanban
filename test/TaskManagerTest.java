@@ -273,7 +273,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         assertEquals(Duration.ofMinutes(30), savedNewTask.getDuration(), "Время выполнения не сохранилось.");
         assertEquals(time, savedNewTask.getStartTime(), "Время начала задачи не сохранилось");
-        assertEquals(time.plus(duration), savedNewTask.getEndTime(), "Время окончания задачи вернулось не верно");
+        assertEquals(time.plus(duration), savedNewTask.getEndTime(), "Время окончания задачи вернулось " +
+                "не верно");
     }
 
     @Test
@@ -328,5 +329,34 @@ abstract class TaskManagerTest<T extends TaskManager> {
         manager.updateSubtask(subtask3);
 
         assertEquals(manager.getEpic(epicId).getStatus(), Status.IN_PROGRESS, "Ожидался статус IN_PROGRESS");
+    }
+
+    @Test
+    public void checkIntersectionsTask() {
+        task1.setDuration(Duration.ofMinutes(30));
+        task1.setStartTime(LocalDateTime.of(2024, 8, 16, 10, 0));
+        manager.updateTask(task1);
+
+        Task task2 = new Task("task2", new ArrayList<>(), Status.NEW, Duration.ofMinutes(15),
+                LocalDateTime.of(2024, 8, 16, 10, 0));
+
+        manager.createTask(task2);
+
+        assertEquals(manager.getTasks().size(), 1, "Задача была добавлена, проверка пересечения " +
+                "не сработала.");
+
+        task2.setStartTime(LocalDateTime.of(2024, 8, 16, 11, 0));
+        int task2Id = manager.createTask(task2);
+        task2.setId(task2Id);
+
+        assertEquals(manager.getTasks().size(), 2, "Проверка на пересечение сработала не верно.");
+
+        Task task3 = new Task("task3", new ArrayList<>(), Status.NEW, Duration.ofMinutes(15),
+                LocalDateTime.of(2024, 8, 16, 10, 30));
+        task3.setId(task2Id);
+        manager.updateTask(task3);
+
+        assertEquals(manager.getTask(task2Id).getStartTime(), task2.getStartTime(), "Проверка на пересечение " +
+                "сработала не верно при обновлении задачи.");
     }
 }
