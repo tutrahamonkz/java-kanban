@@ -5,6 +5,8 @@ import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import service.InMemoryTaskManager;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
@@ -12,7 +14,8 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     @BeforeEach
     public void createTaskEpicSubtask() {
         manager = new InMemoryTaskManager();
-        task1 = new Task("task1", new ArrayList<>(), Status.NEW);
+        task1 = new Task("task1", new ArrayList<>(), Status.NEW, Duration.ofMinutes(30),
+                LocalDateTime.of(2024, 8, 16, 10, 0));
         taskId = manager.createTask(task1);
 
         epic1 = new Epic("epic1", new ArrayList<>(), Status.NEW);

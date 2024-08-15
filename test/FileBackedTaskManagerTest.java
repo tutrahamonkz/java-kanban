@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,7 +38,8 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     @BeforeEach
     public void createTaskEpicSubtask() {
         manager = new FileBackedTaskManager(file);
-        task1 = new Task("task1", new ArrayList<>(), Status.NEW);
+        task1 = new Task("task1", new ArrayList<>(), Status.NEW, Duration.ofMinutes(30),
+                LocalDateTime.of(2024, 8, 16, 10, 0));
         taskId = manager.createTask(task1);
 
         epic1 = new Epic("epic1", new ArrayList<>(), Status.NEW);
