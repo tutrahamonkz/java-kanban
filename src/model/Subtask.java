@@ -34,7 +34,7 @@ public class Subtask extends Task {
     public String toString() {
         String template = "Subtask{title='%s', descriptions=%d, id=%d, status=%s, epicId=%d, duration=%s, " +
                 "startTime=%s}";
-        return String.format(template, getTitle(), getDescriptions().size(), getId(), getStatus(), epicId
-                , getDuration(), getStartTime());
+        return String.format(template, getTitle(), getDescriptions().size(), getId(), getStatus(), epicId,
+                getDuration(), getStartTime());
     }
 }
