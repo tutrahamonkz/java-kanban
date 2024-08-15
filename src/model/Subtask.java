@@ -12,7 +12,8 @@ public class Subtask extends Task {
         this.epicId = epicId;
     }
 
-    public Subtask(String title, ArrayList<String> descriptions, Status status, Integer epicId, Duration duration, LocalDateTime startTime) {
+    public Subtask(String title, ArrayList<String> descriptions, Status status, Integer epicId, Duration duration,
+                   LocalDateTime startTime) {
         super(title, descriptions, status, duration, startTime);
         this.epicId = epicId;
     }
@@ -31,7 +32,8 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        String template = "Subtask{title='%s', descriptions=%d, id=%d, status=%s, epicId=%d, duration=%s, startTime=%s}";
+        String template = "Subtask{title='%s', descriptions=%d, id=%d, status=%s, epicId=%d, duration=%s, " +
+                "startTime=%s}";
         return String.format(template, getTitle(), getDescriptions().size(), getId(), getStatus(), epicId
                 , getDuration(), getStartTime());
     }
