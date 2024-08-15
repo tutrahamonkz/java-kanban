@@ -4,7 +4,6 @@ import model.Subtask;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import service.Managers;
 import service.TaskManager;
 
 import java.io.File;
@@ -30,16 +29,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @BeforeEach
     public void createTaskEpicSubtask() {
-        manager = Managers.getDefault();
-        task1 = new Task("task1", new ArrayList<>(), Status.NEW);
-        taskId = manager.createTask(task1);
-
-        epic1 = new Epic("epic1", new ArrayList<>(), Status.NEW);
-        epicId = manager.createEpic(epic1);
-        savedEpic = manager.getEpic(epicId);
-
-        subtask1 = new Subtask("subtask1", new ArrayList<>(), Status.NEW, epic1.getId());
-        subtaskId = manager.createSubtask(subtask1);
     }
 
     @Test
@@ -333,10 +322,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void checkIntersectionsTask() {
-        task1.setDuration(Duration.ofMinutes(30));
-        task1.setStartTime(LocalDateTime.of(2024, 8, 16, 10, 0));
-        manager.updateTask(task1);
-
         Task task2 = new Task("task2", new ArrayList<>(), Status.NEW, Duration.ofMinutes(15),
                 LocalDateTime.of(2024, 8, 16, 10, 0));
 
@@ -358,5 +343,25 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         assertEquals(manager.getTask(task2Id).getStartTime(), task2.getStartTime(), "Проверка на пересечение " +
                 "сработала не верно при обновлении задачи.");
+    }
+
+    @Test
+    public void prioritizedTasks() {
+        Task task2 = new Task("task2", new ArrayList<>(), Status.NEW, Duration.ofMinutes(15),
+                LocalDateTime.of(2024, 8, 17, 11, 25));
+        int task2Id = manager.createTask(task2);
+
+        Task task3 = new Task("task3", new ArrayList<>(), Status.NEW, Duration.ofMinutes(15),
+                LocalDateTime.of(2023, 8, 16, 10, 30));
+        int task3Id = manager.createTask(task3);
+
+        List<Task> prioritizedTasks = manager.getPrioritizedTasks();
+
+        assertEquals(prioritizedTasks.getFirst(), manager.getTask(task3Id), "1 задача " +
+                "отсортирована не верно.");
+        assertEquals(prioritizedTasks.get(1), manager.getTask(taskId), "2 задача " +
+                "отсортирована не верно.");
+        assertEquals(prioritizedTasks.get(2), manager.getTask(task2Id), "3 задача " +
+                "отсортирована не верно.");
     }
 }
