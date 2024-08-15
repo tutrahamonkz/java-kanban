@@ -227,8 +227,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getPrioritizedTasks() {
-        TreeSet<Task> setTasks = new TreeSet<>((task1, task2) -> // Сортируем задачи по времени начала работы
-                task1.getStartTime().isAfter(task2.getStartTime()) ? 1 : -1);
+        TreeSet<Task> setTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
         List<Task> tasksNotNull = tasks.values().stream() // Убираем задачи с незаданным временем
                 .filter(task -> task.getStartTime() != null)
                 .toList();
