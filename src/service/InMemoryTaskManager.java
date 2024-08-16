@@ -312,6 +312,9 @@ public class InMemoryTaskManager implements TaskManager {
             setEndTime(epic);
         } else {
             calculateStatus(epic);
+            epic.setDuration(Duration.ZERO);
+            epic.setStartTime(null);
+            epic.setEndTime(null);
         }
     }
 }
