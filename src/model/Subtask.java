@@ -1,5 +1,7 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Subtask extends Task {
@@ -7,6 +9,12 @@ public class Subtask extends Task {
 
     public Subtask(String title, ArrayList<String> descriptions, Status status, Integer epicId) {
         super(title, descriptions, status);
+        this.epicId = epicId;
+    }
+
+    public Subtask(String title, ArrayList<String> descriptions, Status status, Integer epicId, Duration duration,
+                   LocalDateTime startTime) {
+        super(title, descriptions, status, duration, startTime);
         this.epicId = epicId;
     }
 
@@ -24,7 +32,9 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        String template = "Subtask{title='%s', descriptions=%d, id=%d, status=%s, epicId=%d}";
-        return String.format(template, getTitle(), getDescriptions().size(), getId(), getStatus(), epicId);
+        String template = "Subtask{title='%s', descriptions=%d, id=%d, status=%s, epicId=%d, duration=%s, " +
+                "startTime=%s}";
+        return String.format(template, getTitle(), getDescriptions().size(), getId(), getStatus(), epicId,
+                getDuration(), getStartTime());
     }
 }
