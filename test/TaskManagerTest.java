@@ -363,5 +363,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 "отсортирована не верно.");
         assertEquals(prioritizedTasks.get(2), manager.getTask(task2Id), "3 задача " +
                 "отсортирована не верно.");
+
+        manager.removeTask(task2Id);
+
+        assertFalse(manager.getPrioritizedTasks().contains(task2), "Задача не удалилась из отсортированного " +
+                "списка");
     }
 }
