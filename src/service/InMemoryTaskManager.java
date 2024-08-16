@@ -16,13 +16,14 @@ public class InMemoryTaskManager implements TaskManager {
     protected static Map<Integer, Task> tasks;
     protected static Map<Integer, Epic> epics;
     protected static Map<Integer, Subtask> subtasks;
-
+    protected TreeSet<Task> setTimeTasks;
 
     public InMemoryTaskManager() {
         tasks = new HashMap<>();
         epics = new HashMap<>();
         subtasks = new HashMap<>();
         this.historyManager = Managers.getDefaultHistory();
+        setTimeTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
     }
 
     @Override
@@ -30,6 +31,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (checkNonIntersectionsTask(task)) { // Проверяем что задача не пересекается по времени с другими задачами
             task.setId(++id);
             tasks.put(task.getId(), task);
+            addPrioritizedTask(task);
         }
         return task.getId();
     }
@@ -46,6 +48,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void clearTasks() { // Удаление всех задач
         if (!tasks.isEmpty()) { // Проверяем что список задач не пустой
             for (Integer taskId : tasks.keySet()) { // Удаляем задачи из истории
+                deletePrioritizedTask(taskId);
                 historyManager.remove(taskId);
             }
             tasks.clear();
@@ -63,12 +66,14 @@ public class InMemoryTaskManager implements TaskManager {
         // Если задача есть в списке и не пересекается с другими задачами
         if (tasks.containsKey(task.getId()) && checkNonIntersectionsTask(task)) {
             tasks.put(task.getId(), task);
+            addPrioritizedTask(task);
         }
     }
 
     @Override
     public void removeTask(int id) { // Удаление задачи по id
         if (tasks.containsKey(id)) {
+            deletePrioritizedTask(id);
             tasks.remove(id);
             historyManager.remove(id); // Удаляем задачу из истории
         }
@@ -101,6 +106,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         if (!subtasks.isEmpty()) {
             for (Integer subtaskId : subtasks.keySet()) { // Удаляем подзадачи из истории
+                deletePrioritizedTask(subtaskId);
                 historyManager.remove(subtaskId);
             }
             subtasks.clear();
@@ -162,6 +168,7 @@ public class InMemoryTaskManager implements TaskManager {
             Epic epic = epics.get(subtask.getEpicId());
             epic.getSubtasksId().add(subtask.getId()); // Добавляем подзадачу в список подзадач эпика
             calculateEpicParam(epic);
+            addPrioritizedTask(subtask);
         }
         return subtask.getId();
     }
@@ -179,6 +186,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void clearSubtask() { // Удаление всех подзадач
         if (!subtasks.isEmpty()) {
             for (Integer subtaskId : subtasks.keySet()) { // Удаляем подзадачи из истории
+                deletePrioritizedTask(subtaskId);
                 historyManager.remove(subtaskId);
             }
             subtasks.clear();
@@ -205,6 +213,7 @@ public class InMemoryTaskManager implements TaskManager {
                 subtasks.put(idSubtask, subtask);
                 Epic epic = epics.get(subtask.getEpicId());
                 calculateEpicParam(epic);
+                addPrioritizedTask(subtask);
             }
         }
     }
@@ -212,6 +221,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeSubtask(int id) { // Удаление подзадачи по id
         if (subtasks.containsKey(id)) {
+            deletePrioritizedTask(id);
             Epic epic = epics.get(subtasks.get(id).getEpicId());
             subtasks.remove(id);
             epic.getSubtasksId().removeIf(tempId -> tempId.equals(id)); // Удаляем подзадачу в списке эпика
@@ -227,16 +237,42 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getPrioritizedTasks() {
-        TreeSet<Task> setTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
-        List<Task> tasksNotNull = tasks.values().stream() // Убираем задачи с незаданным временем
-                .filter(task -> task.getStartTime() != null)
-                .toList();
-        List<Subtask> subtasksNotNull = subtasks.values().stream() // Убираем задачи с незаданным временем
-                .filter(subtask -> subtask.getStartTime() != null)
-                .toList();
-        setTasks.addAll(tasksNotNull);
-        setTasks.addAll(subtasksNotNull);
-        return setTasks.stream().toList();
+        return setTimeTasks.stream().toList();
+    }
+
+    private void addPrioritizedTask(Task task) { // Добавляем задачу в отсортированный список.
+        // Проверяем что задано время начала задачи и такой задачи еще нет в списке отсортированных задач
+        if (task.getStartTime() != null && !setTimeTasks.contains(tasks.get(task.getId()))) {
+            setTimeTasks.add(task);
+        // Если задача была в списке отсортированных задач, удаляем ее, если вдруг задача обновлялась, получаем
+        // ее исходную версию из менеджера.
+        } else if (task.getStartTime() != null) {
+            setTimeTasks.remove(tasks.get(task.getId()));
+            setTimeTasks.add(task);
+        }
+    }
+
+    private void addPrioritizedTask(Subtask task) { // Добавляем подзадачу в отсортированный список.
+        // Проверяем что задано время начала задачи и такой задачи еще нет в списке отсортированных задач
+        if (task.getStartTime() != null && !setTimeTasks.contains(subtasks.get(task.getId()))) {
+            setTimeTasks.add(task);
+        // Если задача была в списке отсортированных задач, удаляем ее, если вдруг задача обновлялась, получаем
+        // ее исходную версию из менеджера.
+        } else if (task.getStartTime() != null) {
+            setTimeTasks.remove(tasks.get(task.getId()));
+            setTimeTasks.add(task);
+        }
+    }
+
+    private void deletePrioritizedTask(int id) { // Удаляем задачу из списка отсортированных задач
+        try { // Проверяем в каком из списков задача, чтобы не проверять класс задач.
+            if (tasks.containsKey(id)) {
+                setTimeTasks.remove(tasks.get(id));
+            }
+            if (subtasks.containsKey(id)) {
+                setTimeTasks.remove(subtasks.get(id));
+            }
+        } catch (NullPointerException ignored) { } // Игнорируем задачи у которых не было заданно время начала.
     }
 
     private boolean checkNonIntersectionsTask(Task task) { // Возвращаем true если нет пересечений
