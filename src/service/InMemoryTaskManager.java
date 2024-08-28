@@ -1,5 +1,6 @@
 package service;
 
+import exception.IntersectionsException;
 import model.Epic;
 import model.Status;
 import model.Subtask;
@@ -280,11 +281,14 @@ public class InMemoryTaskManager implements TaskManager {
         LocalDateTime endTime = task.getEndTime();
         List<Task> prioritizedList = getPrioritizedTasks();
         if (startTime != null && !prioritizedList.isEmpty()) { // Если время заданно и есть с чем сравнивать
-            return prioritizedList.stream()
+            boolean isNotIntersection = prioritizedList.stream()
                     // Проверяем что работа над первой задачей, начнется позже, чем закончится вторая задача
                     .noneMatch(checkTask -> !checkTask.getStartTime().isAfter(endTime) &&
                             // Проверяем что работа над первой задачей, закончится раньше, чем начнется вторая задача
                             !checkTask.getEndTime().isBefore(startTime));
+            if (isNotIntersection) {
+                return true;
+            } else throw new IntersectionsException("Задачи пересекаются по времени.");
         }
         return true;
     }

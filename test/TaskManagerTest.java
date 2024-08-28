@@ -1,7 +1,9 @@
+import exception.IntersectionsException;
 import model.Epic;
 import model.Status;
 import model.Subtask;
 import model.Task;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.TaskManager;
@@ -256,7 +258,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
         LocalDateTime time = LocalDateTime.of(2024, 8, 16, 10, 0);
         newTask.setStartTime(time);
 
-        manager.updateTask(newTask);
+        Assertions.assertThrows(IntersectionsException.class, () -> manager.updateTask(newTask),
+                "Пересечение задач по времени должно вызывать исключение");
 
         Task savedNewTask = manager.getTask(taskId);
 
@@ -274,7 +277,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
         newSubtask.setDuration(duration);
         newSubtask.setStartTime(time);
 
-        manager.updateSubtask(newSubtask);
+        Assertions.assertThrows(IntersectionsException.class, () -> manager.updateSubtask(newSubtask),
+                "Пересечение задач по времени должно вызывать исключение");
 
         int subtaskId2 = manager.createSubtask(new Subtask("subtask2", new ArrayList<>(), Status.IN_PROGRESS,
                 epicId, Duration.ofMinutes(50), LocalDateTime.of(2024, 8, 15, 22, 30)));
@@ -325,7 +329,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Task task2 = new Task("task2", new ArrayList<>(), Status.NEW, Duration.ofMinutes(15),
                 LocalDateTime.of(2024, 8, 16, 10, 0));
 
-        manager.createTask(task2);
+        Assertions.assertThrows(IntersectionsException.class, () -> manager.createTask(task2),
+                "Пересечение задач по времени должно вызывать исключение");
 
         assertEquals(manager.getTasks().size(), 1, "Задача была добавлена, проверка пересечения " +
                 "не сработала.");
@@ -339,7 +344,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Task task3 = new Task("task3", new ArrayList<>(), Status.NEW, Duration.ofMinutes(15),
                 LocalDateTime.of(2024, 8, 16, 10, 30));
         task3.setId(task2Id);
-        manager.updateTask(task3);
+
+        Assertions.assertThrows(IntersectionsException.class, () -> manager.updateTask(task3),
+                "Пересечение задач по времени должно вызывать исключение");
 
         assertEquals(manager.getTask(task2Id).getStartTime(), task2.getStartTime(), "Проверка на пересечение " +
                 "сработала не верно при обновлении задачи.");
