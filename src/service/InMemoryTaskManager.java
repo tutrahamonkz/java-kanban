@@ -286,6 +286,8 @@ public class InMemoryTaskManager implements TaskManager {
         List<Task> prioritizedList = getPrioritizedTasks();
         if (startTime != null && !prioritizedList.isEmpty()) { // Если время заданно и есть с чем сравнивать
             boolean isNotIntersection = prioritizedList.stream()
+                    // Исключаем из проверки саму задачу
+                    .filter(taskTemp -> taskTemp.getId() != task.getId())
                     // Проверяем что работа над первой задачей, начнется позже, чем закончится вторая задача
                     .noneMatch(checkTask -> !checkTask.getStartTime().isAfter(endTime) &&
                             // Проверяем что работа над первой задачей, закончится раньше, чем начнется вторая задача
