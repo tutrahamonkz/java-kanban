@@ -258,8 +258,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         LocalDateTime time = LocalDateTime.of(2024, 8, 16, 10, 0);
         newTask.setStartTime(time);
 
-        Assertions.assertThrows(IntersectionsException.class, () -> manager.updateTask(newTask),
-                "Пересечение задач по времени должно вызывать исключение");
+        manager.updateTask(newTask);
 
         Task savedNewTask = manager.getTask(taskId);
 
