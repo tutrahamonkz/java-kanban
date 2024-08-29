@@ -162,17 +162,19 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Integer createSubtask(Subtask subtask) { // Создание подзадачи
+    public Integer createSubtask(Subtask subtask) { // Создание подзадачи.
+        int epicId = subtask.getEpicId();
         // Создаём подзадачу только если есть эпик и не пересекается время начала работы с другими задачами
-        if (subtask.getEpicId() != 0 && checkNonIntersectionsTask(subtask)) {
+        if (epicId != 0 && epics.containsKey(epicId) && checkNonIntersectionsTask(subtask)) {
             subtask.setId(++id);
             subtasks.put(subtask.getId(), subtask);
-            Epic epic = epics.get(subtask.getEpicId());
+            Epic epic = epics.get(epicId);
             epic.getSubtasksId().add(subtask.getId()); // Добавляем подзадачу в список подзадач эпика
             calculateEpicParam(epic);
             addPrioritizedTask(subtask);
+            return subtask.getId();
         }
-        return subtask.getId();
+        return 0; // Возвращаем 0 если задача не была создана
     }
 
     @Override
@@ -246,8 +248,8 @@ public class InMemoryTaskManager implements TaskManager {
         // Проверяем что задано время начала задачи и такой задачи еще нет в списке отсортированных задач
         if (task.getStartTime() != null && !setTimeTasks.contains(tasks.get(task.getId()))) {
             setTimeTasks.add(task);
-        // Если задача была в списке отсортированных задач, удаляем ее, если вдруг задача обновлялась, получаем
-        // ее исходную версию из менеджера.
+            // Если задача была в списке отсортированных задач, удаляем ее, если вдруг задача обновлялась, получаем
+            // ее исходную версию из менеджера.
         } else if (task.getStartTime() != null) {
             setTimeTasks.remove(tasks.get(task.getId()));
             setTimeTasks.add(task);
@@ -258,8 +260,8 @@ public class InMemoryTaskManager implements TaskManager {
         // Проверяем что задано время начала задачи и такой задачи еще нет в списке отсортированных задач
         if (task.getStartTime() != null && !setTimeTasks.contains(subtasks.get(task.getId()))) {
             setTimeTasks.add(task);
-        // Если задача была в списке отсортированных задач, удаляем ее, если вдруг задача обновлялась, получаем
-        // ее исходную версию из менеджера.
+            // Если задача была в списке отсортированных задач, удаляем ее, если вдруг задача обновлялась, получаем
+            // ее исходную версию из менеджера.
         } else if (task.getStartTime() != null) {
             setTimeTasks.remove(tasks.get(task.getId()));
             setTimeTasks.add(task);
@@ -274,7 +276,8 @@ public class InMemoryTaskManager implements TaskManager {
             if (subtasks.containsKey(id)) {
                 setTimeTasks.remove(subtasks.get(id));
             }
-        } catch (NullPointerException ignored) { } // Игнорируем задачи у которых не было заданно время начала.
+        } catch (NullPointerException ignored) {
+        } // Игнорируем задачи у которых не было заданно время начала.
     }
 
     private boolean checkNonIntersectionsTask(Task task) { // Возвращаем true если нет пересечений
@@ -346,13 +349,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     protected void calculateEpicParam(Epic epic) { // Установка эпику всех рассчитываемых полей
-        if (!epic.getSubtasksId().isEmpty()) {
+        if (epic.getSubtasksId() != null && !epic.getSubtasksId().isEmpty()) {
             calculateStatus(epic);
             calculateDuration(epic);
             setStartTime(epic);
             setEndTime(epic);
         } else {
-            calculateStatus(epic);
+            epic.setStatus(Status.NEW); // Если нет подзадач устанавливаем статус NEW
             epic.setDuration(Duration.ZERO);
             epic.setStartTime(null);
             epic.setEndTime(null);
