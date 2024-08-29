@@ -18,6 +18,9 @@ public class Epic extends Task {
     }
 
     public ArrayList<Integer> getSubtasksId() {
+        if (subtasksId == null) { // Если списка нет создаем новый
+            subtasksId = new ArrayList<>();
+        }
         return subtasksId;
     }
 
