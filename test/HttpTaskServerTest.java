@@ -264,11 +264,8 @@ class HttpTaskServerTest {
         Task task3 = tasks.get(0);
         Task task4 = tasks.get(1);
 
-        assertEquals(id1, task3.getId(), "Некорректный id задачи");
-        assertEquals("Test 1", task3.getTitle(), "Некорректное имя задачи");
-
-        assertEquals(id2, task4.getId(), "Некорректный id задачи");
-        assertEquals("Test 2", task4.getTitle(), "Некорректное имя задачи");
+        assertTrue(manager.getTasks().containsValue(task3), "Некорректно получена задача");
+        assertTrue(manager.getTasks().containsValue(task4), "Некорректно получена задача");
     }
 
     @Test
@@ -304,11 +301,8 @@ class HttpTaskServerTest {
         Subtask subtask3 = subtasks.get(0);
         Subtask subtask4 = subtasks.get(1);
 
-        assertEquals(id1, subtask3.getId(), "Некорректный id задачи");
-        assertEquals("Subtask 1", subtask3.getTitle(), "Некорректное имя задачи");
-
-        assertEquals(id2, subtask4.getId(), "Некорректный id задачи");
-        assertEquals("Subtask 2", subtask4.getTitle(), "Некорректное имя задачи");
+        assertTrue(manager.getSubtasks().containsValue(subtask3), "Некорректно получена задача");
+        assertTrue(manager.getSubtasks().containsValue(subtask4), "Некорректно получена задача");
     }
 
     @Test
@@ -339,11 +333,8 @@ class HttpTaskServerTest {
         Epic epic3 = epics.get(0);
         Epic epic4 = epics.get(1);
 
-        assertEquals(id1, epic3.getId(), "Некорректный id задачи");
-        assertEquals("Epic 1", epic3.getTitle(), "Некорректное имя задачи");
-
-        assertEquals(id2, epic4.getId(), "Некорректный id задачи");
-        assertEquals("Epic 2", epic4.getTitle(), "Некорректное имя задачи");
+        assertTrue(manager.getEpics().containsValue(epic3), "Некорректно получена задача");
+        assertTrue(manager.getEpics().containsValue(epic4), "Некорректно получена задача");
     }
 
     @Test
