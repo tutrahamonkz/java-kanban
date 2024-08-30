@@ -76,7 +76,7 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
                         int newId = manager.createSubtask(gson.fromJson(body, Subtask.class)); // Пытаемся создать подзадачу
                         if (newId == 0) {
                             sendNotFound(exchange);
-                        } else sendOk(exchange); // Даем ответ если все хорошо
+                        } else sendOk(exchange, newId); // Даем ответ если все хорошо
                     } catch (IntersectionsException e) {
                         sendIntersections(exchange); // Если было пересечение задач по времени отправляем код ошибки
                     } catch (ManagerSaveException e) {

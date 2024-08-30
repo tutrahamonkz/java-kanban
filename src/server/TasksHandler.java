@@ -72,8 +72,8 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
                     }
                 } else {
                     try {
-                        manager.createTask(gson.fromJson(body, Task.class)); // Пытаемся создать задачу
-                        sendOk(exchange); // Даем ответ если все хорошо
+                        int responseId = manager.createTask(gson.fromJson(body, Task.class)); // Пытаемся создать задачу
+                        sendOk(exchange, responseId); // Даем ответ если все хорошо
                     } catch (IntersectionsException e) {
                         sendIntersections(exchange); // Если было пересечение задач по времени отправляем код ошибки
                     } catch (ManagerSaveException e) {

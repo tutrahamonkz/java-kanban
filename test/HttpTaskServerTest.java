@@ -60,6 +60,15 @@ class HttpTaskServerTest {
 
         assertEquals(201, response.statusCode());
 
+        String body = response.body();
+
+        assertNotNull(body, "Id не возвращается");
+
+        int subtaskNewId = gson.fromJson(body, Integer.class);
+
+        assertEquals(manager.getTasks().keySet().size(), 1, "Некорректное количество задач");
+        assertTrue(manager.getTasks().containsKey(subtaskNewId), "Некорректный id задачи");
+
         List<Task> tasksFromManager = manager.getTasks().values().stream().toList();
 
         assertNotNull(tasksFromManager, "Задачи не возвращаются");
@@ -84,6 +93,15 @@ class HttpTaskServerTest {
         client.close();
 
         assertEquals(201, response.statusCode());
+
+        String body = response.body();
+
+        assertNotNull(body, "Id не возвращается");
+
+        int subtaskNewId = gson.fromJson(body, Integer.class);
+
+        assertEquals(manager.getEpics().keySet().size(), 1, "Некорректное количество задач");
+        assertTrue(manager.getEpics().containsKey(subtaskNewId), "Некорректный id задачи");
 
         List<Epic> tasksFromManager = manager.getEpics().values().stream().toList();
 
@@ -114,6 +132,15 @@ class HttpTaskServerTest {
         client.close();
 
         assertEquals(201, response.statusCode());
+
+        String body = response.body();
+
+        assertNotNull(body, "Id не возвращается");
+
+        int subtaskNewId = gson.fromJson(body, Integer.class);
+
+        assertEquals(manager.getSubtasks().keySet().size(), 1, "Некорректное количество задач");
+        assertTrue(manager.getSubtasks().containsKey(subtaskNewId), "Некорректный id задачи");
 
         List<Subtask> tasksFromManager = manager.getSubtasks().values().stream().toList();
 

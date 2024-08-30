@@ -65,8 +65,8 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                             sendNotFound(exchange);
                         }
                     } else {
-                        manager.createEpic(gson.fromJson(body, Epic.class)); // Создаем эпик
-                        sendOk(exchange); // Даем ответ если все хорошо
+                        int responseId = manager.createEpic(gson.fromJson(body, Epic.class)); // Создаем эпик
+                        sendOk(exchange, responseId); // Даем ответ если все хорошо
                     }
                 } catch (ManagerSaveException e) {
                     sendHasInteractions(exchange); // Если произошла ошибка при работе с файлами

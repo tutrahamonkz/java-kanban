@@ -19,6 +19,14 @@ public class BaseHttpHandler {
         h.close();
     }
 
+    protected void sendOk(HttpExchange h, int id) throws IOException {
+        byte[] resp = String.valueOf(id).getBytes(StandardCharsets.UTF_8);
+        h.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
+        h.sendResponseHeaders(201, resp.length);
+        h.getResponseBody().write(resp);
+        h.close();
+    }
+
     protected void sendNotFound(HttpExchange h) throws IOException {
         h.sendResponseHeaders(404, 0);
         h.close();
