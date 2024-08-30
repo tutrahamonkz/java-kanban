@@ -4,7 +4,6 @@ import model.Status;
 import model.Subtask;
 import model.Task;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.TaskManager;
 
@@ -28,10 +27,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
     int taskId;
     int epicId;
     int subtaskId;
-
-    @BeforeEach
-    public void createTaskEpicSubtask() {
-    }
 
     @Test
     public void createNewTaskAndGetTaskAndRemoveTaskId() {
