@@ -25,5 +25,4 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         subtask1 = new Subtask("subtask1", new ArrayList<>(), Status.NEW, epic1.getId());
         subtaskId = manager.createSubtask(subtask1);
     }
-
 }
