@@ -25,6 +25,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         String method = exchange.getRequestMethod(); // Получаем метод ответа
         String[] paths = exchange.getRequestURI().getPath().split("/");
         int id = 0;
+        String epicSubtasks = "";
         if (paths.length >= 3) { // Если в запросе был указан id получаем его
             try {
                 id = Integer.parseInt(paths[2]);
@@ -32,21 +33,29 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                 sendHasInteractions(exchange); // Если передано не число отправляем ошибку
             }
         }
+        if (paths.length >= 4) {
+            epicSubtasks = paths[3];
+        }
 
         switch (method) {
             case "GET":
                 if (manager.getEpics() != null) { // Проверка, что список эпиков не пустой
-                    if (id != 0) { // Если задано id
+                    if (id != 0 && !epicSubtasks.equals("subtasks")) { // Если задано id
                         if (manager.getEpics().containsKey(id)) { // Проверяем есть ли такая эпик
                             sendText(exchange, gson.toJson(manager.getEpic(id))); // Возвращаем эпик
                         } else {
                             sendNotFound(exchange); // Если задачи нет, возвращаем ошибку
                         }
                     } else {
-                        if (manager.getEpics().isEmpty()) { // Если список эпиков пустой
-                            sendNotFound(exchange);
-                        } else sendText(exchange, gson.toJson(manager.getEpics().values())); // Иначе возвращаем список
-
+                        if (!epicSubtasks.equals("subtasks")) {
+                            if (manager.getEpics().isEmpty()) { // Если список эпиков пустой
+                                sendNotFound(exchange);
+                            } else
+                                sendText(exchange, gson.toJson(manager.getEpics().values())); // Иначе возвращаем список
+                        } else if (manager.getEpic(id).getSubtasksId() != null) {
+                            // Возвращаем список id подзадач
+                            sendText(exchange, gson.toJson(manager.getEpic(id).getSubtasksId()));
+                        } else sendNotFound(exchange);
                     }
                 } else sendNotFound(exchange); // Если список эпиков пустой возвращаем ошибку
                 break;

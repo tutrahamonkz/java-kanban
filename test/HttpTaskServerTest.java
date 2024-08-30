@@ -480,6 +480,34 @@ class HttpTaskServerTest {
     }
 
     @Test
+    void getEpicSubtasksId() throws Exception {
+        Epic epic = new Epic("Epic 1", new ArrayList<>(List.of("Testing epic 2")),
+                Status.NEW);
+
+        int epicId = manager.createEpic(epic);
+
+        Subtask subtask1 = new Subtask("Subtask 1", new ArrayList<>(List.of("Testing 1")),
+                Status.NEW, epicId, Duration.ofMinutes(5), LocalDateTime.now());
+
+        int subtaskId = manager.createSubtask(subtask1);
+
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/epics/" + epicId + "/subtasks/");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        client.close();
+
+        assertEquals(200, response.statusCode());
+
+        String body = response.body();
+        List<Integer> subtaskIdList = gson.fromJson(body, new TypeToken<List<Integer>>() {}.getType());
+
+        assertEquals(subtaskIdList.size(), 1, "Не верный размер списка подзадач эпика");
+        assertEquals(subtaskIdList.getFirst(), subtaskId, "Не верный id подзадачи");
+    }
+
+    @Test
     void getPrioritizedList() throws Exception {
         Task task1 = new Task("Test 2", new ArrayList<>(List.of("Testing task 2")),
                 Status.NEW, Duration.ofMinutes(5), LocalDateTime.now());
